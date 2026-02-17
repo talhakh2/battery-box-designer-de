@@ -205,6 +205,249 @@ input:focus {
   gap: 12px;
 }
 
+/* ─── PDF Header ─────────────────────────────── */
+.pdfHeader {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: #ffffff;
+}
+
+.pdfHeaderTop {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 14px;
+  padding: 16px;
+  align-items: center;
+}
+
+.pdfBrand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+}
+
+.pdfLogo {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  padding: 9px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.pdfBrandText { min-width: 0; }
+
+.pdfTitle {
+  font-weight: 900;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+
+.pdfSubtitle {
+  margin-top: 4px;
+  font-size: 12px;
+  color: rgba(15, 23, 42, 0.65);
+}
+
+.pdfContacts {
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: linear-gradient(160deg, #eef2ff 0%, #ecfeff 100%);
+  padding: 11px 13px;
+}
+
+.pdfContactsTitle {
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #4f46e5;
+  margin-bottom: 8px;
+}
+
+.pdfContactsBody {
+  display: grid;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0b1220;
+}
+
+.pdfContactLine {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-wrap: anywhere;
+}
+
+.pdfDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 55%, #22c55e 100%);
+  flex: 0 0 auto;
+}
+
+.pdfHeaderBar {
+  height: 10px;
+  background: linear-gradient(90deg, #4f46e5 0%, #8b5cf6 25%, #06b6d4 50%, #22c55e 75%, #f97316 100%);
+}
+
+/* ─── Spec Sheet ─────────────────────────────── */
+.specSheet {
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: #ffffff;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.specTitleRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.specTitle {
+  font-weight: 900;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  color: #0f172a;
+}
+
+.specHint {
+  font-size: 12px;
+  color: rgba(15, 23, 42, 0.55);
+}
+
+.specGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.specItem {
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  background: #f8fafc;
+  padding: 11px 13px;
+  position: relative;
+  overflow: hidden;
+}
+
+.specItem::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 14px 14px 0 0;
+}
+
+.specLabel {
+  font-size: 10px;
+  color: rgba(15, 23, 42, 0.55);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.specValue {
+  margin-top: 8px;
+  font-weight: 900;
+  font-size: 14px;
+  color: #0b1220;
+  overflow-wrap: anywhere;
+}
+
+/* ─── Colored chips ──────────────────────────── */
+.chipL       { background: rgba(139,92,246,0.12); color: #5b21b6; border-color: rgba(139,92,246,0.22); }
+.chipW       { background: rgba(249,115,22,0.12); color: #92400e; border-color: rgba(249,115,22,0.22); }
+.chipH       { background: rgba(34,197,94,0.12);  color: #14532d; border-color: rgba(34,197,94,0.22); }
+.chipCellH   { background: rgba(225,29,72,0.12);  color: #9f1239; border-color: rgba(225,29,72,0.22); }
+.chipVariant { background: rgba(124,58,237,0.12); color: #4c1d95; border-color: rgba(124,58,237,0.22); }
+.chipLayout  { background: rgba(79,70,229,0.12);  color: #3730a3; border-color: rgba(79,70,229,0.22); }
+
+/* Field hint text */
+.fieldHint {
+  font-size: 11px;
+  color: rgba(15, 23, 42, 0.55);
+  margin-top: -4px;
+}
+
+.fieldHint code {
+  background: rgba(15, 23, 42, 0.06);
+  border-radius: 4px;
+  padding: 1px 4px;
+  font-size: 11px;
+  font-family: ui-monospace, monospace;
+}
+
+/* Live parse preview badge */
+.parsedBadge {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(6,182,212,0.08) 100%);
+  border: 1px solid rgba(34, 197, 94, 0.28);
+  border-radius: 14px;
+  padding: 10px 13px;
+  font-size: 13px;
+  color: #0b1220;
+  line-height: 1.5;
+}
+
+.parsedIcon {
+  font-size: 14px;
+  font-weight: 900;
+  color: #16a34a;
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+/* ─── PDF Footer ─────────────────────────────── */
+.pdfFooterNote {
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  padding: 14px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pdfFooterNote strong {
+  color: #a5f3fc;
+}
+
+.pdfFooterBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  flex: 0 0 auto;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+}
+
+/* pdf-mode: slightly compact canvas for better PDF fit */
+.exportArea.pdfMode .canvasWrap { height: 320px; }
+
 .canvasCard {
   border-radius: 16px;
   overflow: hidden;
