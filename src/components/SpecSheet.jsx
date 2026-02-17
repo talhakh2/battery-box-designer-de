@@ -42,16 +42,18 @@ export function SpecSheet({
             {/* <SpecItem label="Variant"       value={`${cellVariant}${is4P ? ' (4-Post)' : ''}`} accent="#7c3aed" /> */}
             <SpecItem label="Capacity"      value={`${capacityAh} Ah`}                          accent="#0891b2" />
             {/* <SpecItem label="Cell Width"    value={`${cellWidthMm} mm`}                          accent="#0891b2" /> */}
-            <SpecItem label="Cell Length"   value={`${cellLengthMm} mm`}                         accent="#059669" />
+            {/* <SpecItem label="Cell Length"   value={`${cellLengthMm} mm`}                         accent="#059669" />
             <SpecItem label="Cell Height"   value={`${cellHeightMm} mm`}                         accent="#e11d48" />
-            <SpecItem label="Cell Weight"   value={`${cellWeightKg} kg`}                         accent="#b45309" />
+            <SpecItem label="Cell Weight"   value={`${cellWeightKg} kg`}                         accent="#b45309" /> */}
+            <SpecItem label="Total Cells"   value={totalCells}                                    accent="#0f172a" />
+            <SpecItem label="Total Cells Weight"  value={`${totalWeightKg} kg`}                         accent="#dc2626" />
           </div>
 
-          <div className="specSectionLabel" style={{ marginTop: 10 }}>Pack Totals</div>
+          {/* <div className="specSectionLabel" style={{ marginTop: 10 }}>Pack Totals</div>
           <div className="specGrid">
             <SpecItem label="Total Cells"   value={totalCells}                                    accent="#0f172a" />
-            <SpecItem label="Total Cell Weight"  value={`${totalWeightKg} kg`}                         accent="#dc2626" wide />
-          </div>
+            <SpecItem label="Total Cells Weight"  value={`${totalWeightKg} kg`}                         accent="#dc2626" wide />
+          </div> */}
         </>
       )}
     </section>

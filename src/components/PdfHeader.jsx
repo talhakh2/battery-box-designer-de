@@ -21,7 +21,7 @@ export function PdfHeader({ title, subtitle }) {
     <section className="pdfHeader">
 
       {/* ── Top stripe: logo + title ── */}
-      <div className="pdfHeaderTop">
+      
         <div className="pdfBrand">
           <div className="pdfLogoWrap">
             <img className="pdfLogo" src={logoSrc} alt="Direct Energy" crossOrigin="anonymous" />
@@ -33,11 +33,11 @@ export function PdfHeader({ title, subtitle }) {
         </div>
 
         {/* Tag line */}
-        <div className="pdfTagline">
+        {/* <div className="pdfTagline">
           <div className="pdfTaglineBadge">KSA's Leading Industrial Battery Supplier</div>
           <div className="pdfTaglineSub">ISO 9001 · ISO 14001 · ISO 45001 Certified</div>
-        </div>
-      </div>
+        </div> */}
+     
 
 
       {/* ── Orange accent bar ── */}

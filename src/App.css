@@ -209,8 +209,8 @@ input:focus {
 :root {
   --de-navy:       #0B1F3A;
   --de-navy-mid:   #122B50;
-  --de-orange:     #E85D04;
-  --de-orange-lt:  #FB8500;
+  --de-orange:     #072555;
+  --de-orange-lt:  #033077;
   --de-white:      #FFFFFF;
   --de-offwhite:   #F4F7FB;
 }
@@ -219,8 +219,19 @@ input:focus {
 .pdfHeader {
   border-radius: 16px;
   overflow: hidden;
-  border: 1px solid rgba(11, 31, 58, 0.18);
+  border: 1px solid rgba(235, 235, 235, 0.18);
   background: var(--de-white);
+}
+
+.pdfCustomerName {
+  
+  border-radius: 16px;
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 900;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  color: rgba(0, 56, 125, 0.75);
 }
 
 .pdfHeaderTop {
@@ -602,8 +613,8 @@ input:focus {
 
 .pdfFooterUrl {
   font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
   font-weight: 800;
-  color: var(--de-orange-lt);
   text-decoration: none;
   letter-spacing: 0.01em;
 }

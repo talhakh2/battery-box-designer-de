@@ -17,6 +17,7 @@ const BOX_COLORS = [
 ]
 
 const DEFAULTS = {
+  customerName: '',
   lengthMm:  621,
   widthMm:   209,
   heightMm:  625,
@@ -59,8 +60,10 @@ async function downloadPdfFromElement(element, filename) {
   const scale    = Math.min(maxW / imgW, maxH / imgH)
   const renderW  = imgW * scale
   const renderH  = imgH * scale
+  const xOffset  = (pageWidth - renderW) / 2
+  const yOffset  = margin
 
-  pdf.addImage(imgData, 'PNG', margin, margin, renderW, renderH, undefined, 'FAST')
+  pdf.addImage(imgData, 'PNG', xOffset, yOffset, renderW, renderH, undefined, 'FAST')
   pdf.save(filename)
 }
 
@@ -90,6 +93,7 @@ function App() {
 
     return {
       lengthMm, widthMm, heightMm, rows, columns,
+      customerName: String(submitted.customerName || '').trim(),
       modelNo:      String(submitted.modelNo || '').trim(),
       cellType:     cellTypeRaw,
       boxColorId,
@@ -161,6 +165,12 @@ function App() {
         <section className="panel">
           <h2 className="panelTitle">Inputs</h2>
           <form className="form" onSubmit={onSubmit}>
+
+            {/* 0 — Customer Name */}
+            <label className="field">
+              <span>Customer Name</span>
+              <input value={form.customerName} onChange={onChange('customerName')} placeholder="e.g. Acme Corporation" />
+            </label>
 
             {/* 1 — Machine Model */}
             <label className="field">
@@ -269,9 +279,16 @@ function App() {
 
               {/* ── PDF header ── */}
               <PdfHeader
-                title="Battery Box Layout Report"
-                subtitle="3D layout preview · specification sheet · contact info"
+                title="Battery Box Layout Details"
+                subtitle="3D layout preview"
               />
+
+              {/* ── Customer name ── */}
+              {preview.customerName && (
+                <div className="pdfCustomerName">
+                  Customer Name: {preview.customerName}
+                </div>
+              )}
 
               {/* ── Spec sheet ── */}
               <SpecSheet
@@ -335,14 +352,14 @@ function App() {
               <div className="pdfFooterNote">
                 <div className="pdfFooterRow">
                   <div className="pdfFooterLeft">
-                    <span className="pdfFooterBadge">Direct Energy</span>
+                    <span className="pdfFooterBadge">Direct Energy Company</span>
                     <span className="pdfFooterAddress">
                       7284 Masamh Street, Al Mashael, Riyadh 14326, Saudi Arabia
                     </span>
                   </div>
                   <div className="pdfFooterRight">
                     {/* <span className="pdfFooterContact">📞 +966 11 204 4884</span> */}
-                    <span className="pdfFooterContact">📧 directenergy@dahbashi.com</span>
+                    {/* <span className="pdfFooterContact">📧 directenergy@dahbashi.com</span> */}
                     <a className="pdfFooterUrl" href="https://directenergy.dahbashi.com">
                       🌐 directenergy.dahbashi.com
                     </a>

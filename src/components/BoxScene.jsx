@@ -14,8 +14,8 @@ import {
 import * as THREE from 'three'
 import { forwardRef, useImperativeHandle, useMemo, useRef } from 'react'
 
-// Unit direction for standard view: front-left, slightly elevated
-const STANDARD_DIR = new THREE.Vector3(-2.8, 1.8, 3.0).normalize()
+// Unit direction for standard view: front-right, slightly elevated
+const STANDARD_DIR = new THREE.Vector3(-2.8, 1.8, -3.0).normalize()
 
 /** Lives inside <Bounds> — uses useBounds() to do a proper fit after
  *  pointing the camera at the standard angle. */
@@ -208,72 +208,96 @@ function CellGrid({ w, h, l, rows, cols, cellHeightScene }) {
   )
 }
 
-/* ── Always-visible dimension label pill ────────────────────── */
-function DimLabel({ position, text, accentColor }) {
-  const bgW = Math.min(2.8, Math.max(1.2, text.length * 0.138))
+/* ── Dimension color scheme ──────────────────────────────────── */
+const DIM_W = { line: '#3b82f6', bg: '#1d4ed8', text: '#ffffff' }  // blue  — Width
+const DIM_L = { line: '#22c55e', bg: '#15803d', text: '#ffffff' }  // green — Length
+const DIM_H = { line: '#f97316', bg: '#c2410c', text: '#ffffff' }  // orange — Height
+
+/* ── Pill label: coloured background + white text ────────────── */
+/** scale prop adjusts all sizes proportionally to the box */
+function DimLabel({ position, text, scheme, scale = 1 }) {
+  const pillW = (text.length * 0.076 + 0.22) * scale
+  const pillH = 0.30 * scale
   return (
-    <Billboard follow>
-      <group position={position}>
-        <RoundedBox args={[bgW, 0.32, 0.05]} radius={0.09} smoothness={6}>
-          <meshBasicMaterial color={accentColor} depthTest={false} depthWrite={false} />
-        </RoundedBox>
-        <Text
-          position={[0, 0, 0.05]}
-          fontSize={0.17}
-          color="#ffffff"
-          outlineWidth={0.012}
-          outlineColor={accentColor}
-          outlineOpacity={0.5}
-          depthTest={false}
-          depthWrite={false}
-          renderOrder={2001}
-        >
-          {text}
-        </Text>
-      </group>
+    <Billboard follow position={position}>
+      <RoundedBox args={[pillW, pillH, 0.01 * scale]} radius={0.07 * scale} smoothness={4}>
+        <meshBasicMaterial color={scheme.bg} depthTest={false} transparent opacity={0.95} />
+      </RoundedBox>
+      <Text
+        position={[0, 0, 0.02 * scale]}
+        fontSize={0.155 * scale}
+        fontWeight="bold"
+        color={scheme.text}
+        anchorX="center"
+        anchorY="middle"
+        depthTest={false}
+        depthWrite={false}
+        renderOrder={2001}
+      >
+        {text}
+      </Text>
     </Billboard>
   )
 }
 
-function Tick({ a, b, color }) {
-  return <Line points={[a, b]} color={color} lineWidth={2.5} depthTest={false} />
+/* ── Cone arrowhead ──────────────────────────────────────────── */
+/** rotX / rotZ rotate the cone (default tip points +Y); scale matches box */
+function ArrowTip({ position, rotX = 0, rotZ = 0, color, scale = 1 }) {
+  return (
+    <mesh position={position} rotation={[rotX, 0, rotZ]} scale={[scale, scale, scale]}>
+      <coneGeometry args={[0.034, 0.10, 8]} />
+      <meshBasicMaterial color={color} depthTest={false} />
+    </mesh>
+  )
 }
 
 function DimensionGuides({ w, h, l, lengthMm, widthMm, heightMm }) {
-  const pad  = 0.38
-  const tk   = 0.09
-  const yTop   =  h / 2 + pad
-  const yBot   = -h / 2 - pad
-  const xRight =  w / 2 + pad
-  const xLeft  = -w / 2 - pad
-  const zFront = -l / 2 - pad
-  const zBack  =  l / 2 + pad
-  const wColor = '#f97316'
-  const lColor = '#8b5cf6'
-  const hColor = '#22c55e'
-  const lp     = { depthTest: false, lineWidth: 2.8 }
+  // Scale all UI elements relative to the largest box dimension
+  const maxDim = Math.max(w, h, l)
+  const s      = maxDim / 3.5           // label / arrowhead scale factor
+  const gap    = maxDim * 0.09          // how far dim-lines float from box faces
+  const lOff   = maxDim * 0.11          // extra offset for the label pill
+
+  // ── Width (blue): top-front edge — centred, spans narrow face ─
+  const wY =  h / 2 + gap
+  const wZ =  l / 2 + gap               // front face (toward camera)
+
+  // ── Length (green): top-right edge — along the long face top ─
+  const lX =  w / 2 + gap               // right face (toward camera)
+  const lY =  h / 2 + gap * 0.5         // slightly below width to avoid overlap
+
+  // ── Height (orange): front-left vertical edge ────────────────
+  const hX = -w / 2 - gap               // left edge of front face
+  const hZ =  l / 2 + gap               // front face (toward camera)
+
+  const lp = { depthTest: false, lineWidth: 2.5 }  // main dim line
+  const ep = { depthTest: false, lineWidth: 1.2 }  // thin extension / projection line
 
   return (
     <group>
-      {/* Width */}
-      <Line points={[[-w / 2, yTop, zFront], [w / 2, yTop, zFront]]} color={wColor} {...lp} />
-      <Tick a={[-w / 2, yTop - tk, zFront]} b={[-w / 2, yTop + tk, zFront]} color={wColor} />
-      <Tick a={[ w / 2, yTop - tk, zFront]} b={[ w / 2, yTop + tk, zFront]} color={wColor} />
-      <DimLabel position={[0, yTop + 0.24, zFront]} text={`W  ${widthMm} mm`} accentColor={wColor} />
+      {/* ══ Width (blue) — floats above the top-front edge ══ */}
+      <Line points={[[-w / 2, h / 2, l / 2], [-w / 2, wY, wZ]]} color={DIM_W.line} {...ep} />
+      <Line points={[[ w / 2, h / 2, l / 2], [ w / 2, wY, wZ]]} color={DIM_W.line} {...ep} />
+      <Line points={[[-w / 2, wY, wZ], [w / 2, wY, wZ]]} color={DIM_W.line} {...lp} />
+      <ArrowTip position={[-w / 2, wY, wZ]} rotZ={-Math.PI / 2} color={DIM_W.line} scale={s} />
+      <ArrowTip position={[ w / 2, wY, wZ]} rotZ={ Math.PI / 2} color={DIM_W.line} scale={s} />
+      <DimLabel position={[0, wY + lOff, wZ]} text={`W: ${widthMm} mm`} scheme={DIM_W} scale={s} />
 
-      {/* Length */}
-      <Line points={[[xLeft, yBot, -l / 2], [xLeft, yBot, l / 2]]} color={lColor} {...lp} />
-      <Tick a={[xLeft - tk, yBot, -l / 2]} b={[xLeft + tk, yBot, -l / 2]} color={lColor} />
-      <Tick a={[xLeft - tk, yBot,  l / 2]} b={[xLeft + tk, yBot,  l / 2]} color={lColor} />
-      <DimLabel position={[xLeft, yBot - 0.24, 0]} text={`L  ${lengthMm} mm`} accentColor={lColor} />
+      {/* ══ Length (green) — runs along top-right edge ══ */}
+      <Line points={[[w / 2, h / 2, -l / 2], [lX, lY, -l / 2]]} color={DIM_L.line} {...ep} />
+      <Line points={[[w / 2, h / 2,  l / 2], [lX, lY,  l / 2]]} color={DIM_L.line} {...ep} />
+      <Line points={[[lX, lY, -l / 2], [lX, lY, l / 2]]} color={DIM_L.line} {...lp} />
+      <ArrowTip position={[lX, lY, -l / 2]} rotX={ Math.PI / 2} color={DIM_L.line} scale={s} />
+      <ArrowTip position={[lX, lY,  l / 2]} rotX={-Math.PI / 2} color={DIM_L.line} scale={s} />
+      <DimLabel position={[lX + lOff, lY, 0]} text={`L: ${lengthMm} mm`} scheme={DIM_L} scale={s} />
 
-      {/* Box Height */}
-      <Line points={[[xRight, -h / 2, zBack], [xRight, h / 2, zBack]]} color={hColor} {...lp} />
-      <Tick a={[xRight - tk, -h / 2, zBack]} b={[xRight + tk, -h / 2, zBack]} color={hColor} />
-      <Tick a={[xRight - tk,  h / 2, zBack]} b={[xRight + tk,  h / 2, zBack]} color={hColor} />
-      <DimLabel position={[xRight + 0.05, 0, zBack]} text={`H  ${heightMm} mm`} accentColor={hColor} />
-
-      {/* Cell Height guide removed — shown in spec sheet instead */}
+      {/* ══ Height (orange) — runs along front-left vertical edge ══ */}
+      <Line points={[[-w / 2, -h / 2, l / 2], [hX, -h / 2, hZ]]} color={DIM_H.line} {...ep} />
+      <Line points={[[-w / 2,  h / 2, l / 2], [hX,  h / 2, hZ]]} color={DIM_H.line} {...ep} />
+      <Line points={[[hX, -h / 2, hZ], [hX, h / 2, hZ]]} color={DIM_H.line} {...lp} />
+      <ArrowTip position={[hX, -h / 2, hZ]} rotX={0} rotZ={0}       color={DIM_H.line} scale={s} />
+      <ArrowTip position={[hX,  h / 2, hZ]} rotX={0} rotZ={Math.PI} color={DIM_H.line} scale={s} />
+      <DimLabel position={[hX - lOff, 0, hZ]} text={`H: ${heightMm} mm`} scheme={DIM_H} scale={s} />
     </group>
   )
 }
