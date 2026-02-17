@@ -10,7 +10,7 @@ export function DetailsCard({ modelNo, cellType }) {
 
       <div className="detailsGrid">
         <div className="kv">
-          <div className="k">Model No</div>
+          <div className="k">Machine Model</div>
           <div className="v">{modelNo || '—'}</div>
         </div>
         <div className="kv">

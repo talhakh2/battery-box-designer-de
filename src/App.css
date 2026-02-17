@@ -205,38 +205,56 @@ input:focus {
   gap: 12px;
 }
 
+/* ─── Direct Energy Brand Tokens ─────────────── */
+:root {
+  --de-navy:       #0B1F3A;
+  --de-navy-mid:   #122B50;
+  --de-orange:     #E85D04;
+  --de-orange-lt:  #FB8500;
+  --de-white:      #FFFFFF;
+  --de-offwhite:   #F4F7FB;
+}
+
 /* ─── PDF Header ─────────────────────────────── */
 .pdfHeader {
   border-radius: 16px;
   overflow: hidden;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  background: #ffffff;
+  border: 1px solid rgba(11, 31, 58, 0.18);
+  background: var(--de-white);
 }
 
 .pdfHeaderTop {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
   gap: 14px;
-  padding: 16px;
+  padding: 16px 20px;
   align-items: center;
+  background: var(--de-white);
 }
 
 .pdfBrand {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   align-items: center;
   min-width: 0;
 }
 
-.pdfLogo {
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
-  background: #f8fafc;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  padding: 9px;
-  object-fit: contain;
+.pdfLogoWrap {
+  background: var(--de-offwhite);
+  border: 1px solid rgba(11, 31, 58, 0.1);
+  border-radius: 12px;
+  padding: 8px 12px;
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pdfLogo {
+  width: 130px;
+  height: 44px;
+  object-fit: contain;
+  display: block;
 }
 
 .pdfBrandText { min-width: 0; }
@@ -245,64 +263,85 @@ input:focus {
   font-weight: 900;
   font-size: 17px;
   letter-spacing: -0.02em;
-  color: #0f172a;
+  color: var(--de-navy);
 }
 
 .pdfSubtitle {
   margin-top: 4px;
   font-size: 12px;
-  color: rgba(15, 23, 42, 0.65);
+  color: rgba(11, 31, 58, 0.55);
 }
 
-.pdfContacts {
-  border-radius: 14px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: linear-gradient(160deg, #eef2ff 0%, #ecfeff 100%);
-  padding: 11px 13px;
+/* Right side tag */
+.pdfTagline {
+  text-align: right;
 }
 
-.pdfContactsTitle {
+.pdfTaglineBadge {
+  display: inline-block;
+  background: var(--de-navy);
+  color: var(--de-white);
   font-size: 11px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: #4f46e5;
-  margin-bottom: 8px;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.03em;
 }
 
-.pdfContactsBody {
-  display: grid;
-  gap: 7px;
-  font-size: 12px;
+.pdfTaglineSub {
+  margin-top: 6px;
+  font-size: 10px;
   font-weight: 700;
-  color: #0b1220;
+  color: rgba(11, 31, 58, 0.5);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-.pdfContactLine {
+/* Dark navy contact band */
+.pdfContactBand {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0;
+  background: var(--de-navy);
+  padding: 10px 20px;
+  flex-wrap: wrap;
+}
+
+.pdfContactItem {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+  padding: 0 14px;
+  flex: 1 1 auto;
+  min-width: 0;
   overflow-wrap: anywhere;
 }
 
-.pdfDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 55%, #22c55e 100%);
+.pdfContactItem:first-child { padding-left: 0; }
+
+.pdfContactIcon { font-size: 13px; flex: 0 0 auto; }
+
+.pdfContactDivider {
+  width: 1px;
+  height: 22px;
+  background: rgba(255,255,255,0.18);
   flex: 0 0 auto;
 }
 
+/* Orange accent bar */
 .pdfHeaderBar {
-  height: 10px;
-  background: linear-gradient(90deg, #4f46e5 0%, #8b5cf6 25%, #06b6d4 50%, #22c55e 75%, #f97316 100%);
+  height: 6px;
+  background: linear-gradient(90deg, var(--de-orange) 0%, var(--de-orange-lt) 100%);
 }
 
 /* ─── Spec Sheet ─────────────────────────────── */
 .specSheet {
   border-radius: 16px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  background: #ffffff;
+  border: 1px solid rgba(11, 31, 58, 0.12);
+  background: var(--de-white);
   padding: 16px;
   overflow: hidden;
 }
@@ -319,7 +358,7 @@ input:focus {
   font-weight: 900;
   font-size: 15px;
   letter-spacing: -0.01em;
-  color: #0f172a;
+  color: var(--de-navy);
 }
 
 .specHint {
@@ -391,6 +430,63 @@ input:focus {
 }
 
 /* Live parse preview badge */
+/* ─── Form group label ───────────────────────── */
+.fieldGroupLabel {
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(15, 23, 42, 0.5);
+  margin-bottom: 6px;
+  margin-top: 4px;
+}
+
+/* ─── Box Color radio group ──────────────────── */
+.colorRadioGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.colorRadioOption {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  border: 2px solid rgba(15, 23, 42, 0.12);
+  border-radius: 12px;
+  padding: 7px 12px;
+  background: #f8fafc;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+
+.colorRadioOption input[type="radio"] {
+  display: none;
+}
+
+.colorRadioOption.selected {
+  border-color: #0B1F3A;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(11, 31, 58, 0.08);
+}
+
+.colorSwatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,0.15);
+  flex: 0 0 auto;
+  display: block;
+}
+
+.colorLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
 .parsedBadge {
   display: flex;
   align-items: flex-start;
@@ -405,44 +501,123 @@ input:focus {
 }
 
 .parsedIcon {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 900;
   color: #16a34a;
   flex: 0 0 auto;
-  margin-top: 1px;
+  margin-top: 2px;
+}
+
+.parsedBody {
+  min-width: 0;
+  font-size: 13px;
+}
+
+.parsedGrid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 12px;
+  margin-top: 7px;
+  font-size: 12px;
+  color: rgba(15, 23, 42, 0.7);
+}
+
+.parsedGrid strong {
+  color: #0b1220;
+}
+
+/* Section label inside spec sheet */
+.specSectionLabel {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(15, 23, 42, 0.5);
+  margin-bottom: 8px;
+  padding-left: 2px;
+}
+
+/* Wide spec item spans 2 columns */
+.specItemWide {
+  grid-column: 1 / -1;
 }
 
 /* ─── PDF Footer ─────────────────────────────── */
 .pdfFooterNote {
   border-radius: 16px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-  padding: 14px 16px;
-  display: flex;
-  gap: 12px;
-  align-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(11, 31, 58, 0.18);
+  background: var(--de-navy);
   color: rgba(255, 255, 255, 0.85);
   font-size: 12px;
   font-weight: 600;
 }
 
-.pdfFooterNote strong {
-  color: #a5f3fc;
+.pdfFooterRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 14px 18px;
+  align-items: center;
+}
+
+.pdfFooterLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pdfFooterRight {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-end;
 }
 
 .pdfFooterBadge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 12px;
+  padding: 5px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+  background: linear-gradient(90deg, var(--de-orange) 0%, var(--de-orange-lt) 100%);
   color: #ffffff;
   font-weight: 900;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.04em;
-  flex: 0 0 auto;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+  align-self: flex-start;
+}
+
+.pdfFooterAddress {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
+}
+
+.pdfFooterContact {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+}
+
+.pdfFooterUrl {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--de-orange-lt);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+}
+
+.pdfFooterDisclaimer {
+  background: rgba(0, 0, 0, 0.25);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 9px 18px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.pdfFooterDisclaimer strong {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* pdf-mode: slightly compact canvas for better PDF fit */
@@ -457,6 +632,32 @@ input:focus {
 
 .canvasHeader {
   padding: 10px 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.stdViewBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--de-navy);
+  background: var(--de-offwhite);
+  border: 1.5px solid rgba(11, 31, 58, 0.18);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.stdViewBtn:hover {
+  background: #e2e8f0;
+  border-color: rgba(11, 31, 58, 0.35);
 }
 
 .chips {

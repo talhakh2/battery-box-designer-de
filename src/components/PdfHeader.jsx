@@ -1,30 +1,47 @@
+import { useEffect, useState } from 'react'
+
+function useLogoDataUrl() {
+  const [src, setSrc] = useState('/logo.svg')
+  useEffect(() => {
+    fetch('/logo.svg')
+      .then(r => r.text())
+      .then(svgText => {
+        const b64 = btoa(unescape(encodeURIComponent(svgText)))
+        setSrc(`data:image/svg+xml;base64,${b64}`)
+      })
+      .catch(() => {})
+  }, [])
+  return src
+}
+
 export function PdfHeader({ title, subtitle }) {
+  const logoSrc = useLogoDataUrl()
+
   return (
     <section className="pdfHeader">
+
+      {/* ── Top stripe: logo + title ── */}
       <div className="pdfHeaderTop">
         <div className="pdfBrand">
-          <img className="pdfLogo" src="/logo.svg" alt="Company logo" />
+          <div className="pdfLogoWrap">
+            <img className="pdfLogo" src={logoSrc} alt="Direct Energy" crossOrigin="anonymous" />
+          </div>
           <div className="pdfBrandText">
             <div className="pdfTitle">{title}</div>
             <div className="pdfSubtitle">{subtitle}</div>
           </div>
         </div>
 
-        <div className="pdfContacts">
-          <div className="pdfContactsTitle">For more inquiries</div>
-          <div className="pdfContactsBody">
-            <div className="pdfContactLine">
-              <span className="pdfDot" aria-hidden="true" />
-              <span>mohammad.shaadab@dahbashi.com</span>
-            </div>
-            <div className="pdfContactLine">
-              <span className="pdfDot" aria-hidden="true" />
-              <span>service.mrpjed@dahbashi.com</span>
-            </div>
-          </div>
+        {/* Tag line */}
+        <div className="pdfTagline">
+          <div className="pdfTaglineBadge">KSA's Leading Industrial Battery Supplier</div>
+          <div className="pdfTaglineSub">ISO 9001 · ISO 14001 · ISO 45001 Certified</div>
         </div>
       </div>
-      <div className="pdfHeaderBar" aria-hidden="true" />
+
+
+      {/* ── Orange accent bar ── */}
+      <div className="pdfHeaderBar" />
     </section>
   )
 }

@@ -1,4 +1,4 @@
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useThree } from '@react-three/fiber'
 import {
   Billboard,
   Bounds,
@@ -8,9 +8,39 @@ import {
   OrbitControls,
   RoundedBox,
   Text,
+  useBounds,
+  useTexture,
 } from '@react-three/drei'
 import * as THREE from 'three'
-import { useMemo } from 'react'
+import { forwardRef, useImperativeHandle, useMemo, useRef } from 'react'
+
+// Unit direction for standard view: front-left, slightly elevated
+const STANDARD_DIR = new THREE.Vector3(-2.8, 1.8, 3.0).normalize()
+
+/** Lives inside <Bounds> — uses useBounds() to do a proper fit after
+ *  pointing the camera at the standard angle. */
+function BoundsResetHelper({ helperRef }) {
+  const bounds             = useBounds()
+  const { camera, controls } = useThree()
+
+  useImperativeHandle(helperRef, () => ({
+    resetToStandardView() {
+      // Current orbit distance (keep scale, just change angle)
+      const target = controls ? controls.target.clone() : new THREE.Vector3()
+      const dist   = camera.position.distanceTo(target)
+      // Aim from standard direction
+      camera.position.copy(
+        STANDARD_DIR.clone().multiplyScalar(Math.max(dist, 3))
+      )
+      camera.lookAt(target)
+      if (controls) { controls.target.copy(target); controls.update() }
+      // Re-fit so Bounds picks the right zoom for this angle
+      bounds.refresh().fit()
+    },
+  }))
+
+  return null
+}
 
 function mmToSceneUnits(mm) {
   return mm / 100
@@ -209,7 +239,7 @@ function Tick({ a, b, color }) {
   return <Line points={[a, b]} color={color} lineWidth={2.5} depthTest={false} />
 }
 
-function DimensionGuides({ w, h, l, lengthMm, widthMm, heightMm, cellHeightMm }) {
+function DimensionGuides({ w, h, l, lengthMm, widthMm, heightMm }) {
   const pad  = 0.38
   const tk   = 0.09
   const yTop   =  h / 2 + pad
@@ -218,16 +248,10 @@ function DimensionGuides({ w, h, l, lengthMm, widthMm, heightMm, cellHeightMm })
   const xLeft  = -w / 2 - pad
   const zFront = -l / 2 - pad
   const zBack  =  l / 2 + pad
-  const wColor  = '#f97316'
-  const lColor  = '#8b5cf6'
-  const hColor  = '#22c55e'
-  const chColor = '#e11d48' // red → cell height
-  const lp      = { depthTest: false, lineWidth: 2.8 }
-
-  // Cell height in scene units, clamped to box
-  const ch = Math.min(cellHeightMm / 100, h - 0.04)
-  const cellTopY  = -h / 2 + ch
-  const cellBotY  = -h / 2
+  const wColor = '#f97316'
+  const lColor = '#8b5cf6'
+  const hColor = '#22c55e'
+  const lp     = { depthTest: false, lineWidth: 2.8 }
 
   return (
     <group>
@@ -249,21 +273,75 @@ function DimensionGuides({ w, h, l, lengthMm, widthMm, heightMm, cellHeightMm })
       <Tick a={[xRight - tk,  h / 2, zBack]} b={[xRight + tk,  h / 2, zBack]} color={hColor} />
       <DimLabel position={[xRight + 0.05, 0, zBack]} text={`H  ${heightMm} mm`} accentColor={hColor} />
 
-      {/* Cell Height — dashed bracket on the front-left edge */}
-      <Line points={[[-w / 2 - 0.12, cellBotY, zFront], [-w / 2 - 0.12, cellTopY, zFront]]} color={chColor} {...lp} />
-      <Tick a={[-w / 2 - 0.12 - tk, cellBotY, zFront]} b={[-w / 2 - 0.12 + tk, cellBotY, zFront]} color={chColor} />
-      <Tick a={[-w / 2 - 0.12 - tk, cellTopY, zFront]} b={[-w / 2 - 0.12 + tk, cellTopY, zFront]} color={chColor} />
-      <DimLabel
-        position={[-w / 2 - 0.12, (cellBotY + cellTopY) / 2, zFront + 0.05]}
-        text={`Cell H  ${cellHeightMm} mm`}
-        accentColor={chColor}
-      />
+      {/* Cell Height guide removed — shown in spec sheet instead */}
+    </group>
+  )
+}
+
+/** Logo decal — centred on a face, preserves image aspect ratio.
+ *  xPos / rotY control which length-side face it appears on. */
+function FaceLogo({ faceW, faceH, xPos, rotY }) {
+  const texture = useTexture('/logo2.jpeg')
+
+  const imgW  = texture.image?.naturalWidth  || texture.image?.width  || 300
+  const imgH  = texture.image?.naturalHeight || texture.image?.height || 100
+  const aspect = imgW / imgH
+
+  // Logo fills ~50 % of the long face width, height derived from aspect
+  const logoW = faceW * 0.50
+  const logoH = logoW / aspect
+
+  // Top-middle: flush to the top edge with a small inset
+  const yPos = faceH / 2 - logoH / 2 - faceH * 0.04
+
+  return (
+    <mesh position={[xPos, yPos, 0]} rotation={[0, rotY, 0]} renderOrder={10}>
+      <planeGeometry args={[logoW, logoH]} />
+      <meshBasicMaterial map={texture} transparent depthTest={false} toneMapped={false} />
+    </mesh>
+  )
+}
+
+/** Solid box — 5 faces (no top lid) so cells are visible from above */
+function BlackBox({ w, h, l, color }) {
+  const mat = <meshStandardMaterial color={color} roughness={0.25} metalness={0.15} side={THREE.DoubleSide} />
+  const t   = 0.008                // panel thickness
+  const off = t / 2 + 0.002       // logo sits just outside the panel surface
+
+  return (
+    <group>
+      {/* Bottom */}
+      <mesh position={[0, -h / 2, 0]} rotation={[-Math.PI / 2, 0, 0]} castShadow receiveShadow>
+        <boxGeometry args={[w, l, t]} />{mat}
+      </mesh>
+
+      {/* Front face (z = -l/2) — narrow width face, no logo */}
+      <mesh position={[0, 0, -l / 2]} castShadow receiveShadow>
+        <boxGeometry args={[w, h, t]} />{mat}
+      </mesh>
+
+      {/* Back face (z = +l/2) — narrow width face, no logo */}
+      <mesh position={[0, 0, l / 2]} castShadow receiveShadow>
+        <boxGeometry args={[w, h, t]} />{mat}
+      </mesh>
+
+      {/* Left face (x = -w/2) — LONG length side — logo facing outward (-X) */}
+      <mesh position={[-w / 2, 0, 0]} rotation={[0, Math.PI / 2, 0]} castShadow receiveShadow>
+        <boxGeometry args={[l, h, t]} />{mat}
+      </mesh>
+      <FaceLogo faceW={l} faceH={h} xPos={-w / 2 - off} rotY={-Math.PI / 2} />
+
+      {/* Right face (x = +w/2) — LONG length side — logo facing outward (+X) */}
+      <mesh position={[w / 2, 0, 0]} rotation={[0, Math.PI / 2, 0]} castShadow receiveShadow>
+        <boxGeometry args={[l, h, t]} />{mat}
+      </mesh>
+      <FaceLogo faceW={l} faceH={h} xPos={w / 2 + off} rotY={Math.PI / 2} />
     </group>
   )
 }
 
 /* ── Outer box shell ─────────────────────────────────────────── */
-function BoxModel({ lengthMm, widthMm, heightMm, cellHeightMm, rows, columns }) {
+function BoxModel({ lengthMm, widthMm, heightMm, cellHeightMm, rows, columns, boxColor }) {
   const w = mmToSceneUnits(widthMm)
   const h = mmToSceneUnits(heightMm)
   const l = mmToSceneUnits(lengthMm)
@@ -271,18 +349,9 @@ function BoxModel({ lengthMm, widthMm, heightMm, cellHeightMm, rows, columns }) 
 
   return (
     <group>
-      {/* Transparent dark shell */}
-      <mesh geometry={boxGeo} castShadow receiveShadow>
-        <meshStandardMaterial
-          color="#0f172a"
-          transparent
-          opacity={0.13}
-          roughness={0.3}
-          metalness={0.1}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
-      {/* Bold black edges */}
+      {/* 5-sided solid shell (top open) */}
+      <BlackBox w={w} h={h} l={l} color={boxColor} />
+      {/* Bold wireframe edges */}
       <mesh geometry={boxGeo}>
         <meshBasicMaterial transparent opacity={0} />
         <Edges color="#000000" threshold={15} lineWidth={2.5} />
@@ -293,20 +362,35 @@ function BoxModel({ lengthMm, widthMm, heightMm, cellHeightMm, rows, columns }) 
       <DimensionGuides
         w={w} h={h} l={l}
         lengthMm={lengthMm} widthMm={widthMm} heightMm={heightMm}
-        cellHeightMm={cellHeightMm}
       />
     </group>
   )
 }
 
 /* ── Canvas ──────────────────────────────────────────────────── */
-export function BoxScene({ lengthMm, widthMm, heightMm, cellHeightMm, rows, columns }) {
+export const BoxScene = forwardRef(function BoxScene(
+  { lengthMm, widthMm, heightMm, cellHeightMm, rows, columns, boxColor = '#0f172a' },
+  ref
+) {
+  // helperRef is forwarded into BoundsResetHelper which lives inside Canvas
+  const helperRef = useRef()
+
+  // Forward the helper's method to the parent ref
+  useImperativeHandle(ref, () => ({
+    resetToStandardView() {
+      helperRef.current?.resetToStandardView()
+    },
+  }))
+
+  // Initial camera placed along the standard direction so Bounds fits correctly
+  const initCam = STANDARD_DIR.clone().multiplyScalar(6).toArray()
+
   return (
     <Canvas
       shadows
       dpr={[1, 2]}
       gl={{ antialias: true, preserveDrawingBuffer: true }}
-      camera={{ position: [0, 1.4, 4.2], fov: 45, near: 0.01, far: 200 }}
+      camera={{ position: initCam, fov: 45, near: 0.01, far: 200 }}
     >
       <color attach="background" args={['#f8fafc']} />
       <ambientLight intensity={0.75} />
@@ -320,7 +404,7 @@ export function BoxScene({ lengthMm, widthMm, heightMm, cellHeightMm, rows, colu
       <directionalLight position={[-4, 3, -3]} intensity={0.45} />
       <directionalLight position={[0, -3, 0]}  intensity={0.15} />
 
-      <Bounds fit clip observe margin={1.5}>
+      <Bounds fit clip observe margin={1.6}>
         <BoxModel
           lengthMm={lengthMm}
           widthMm={widthMm}
@@ -328,7 +412,10 @@ export function BoxScene({ lengthMm, widthMm, heightMm, cellHeightMm, rows, colu
           cellHeightMm={cellHeightMm}
           rows={rows}
           columns={columns}
+          boxColor={boxColor}
         />
+        {/* Must be inside <Bounds> to access useBounds() */}
+        <BoundsResetHelper helperRef={helperRef} />
       </Bounds>
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]} receiveShadow>
@@ -340,4 +427,4 @@ export function BoxScene({ lengthMm, widthMm, heightMm, cellHeightMm, rows, colu
       <Environment preset="studio" />
     </Canvas>
   )
-}
+})
