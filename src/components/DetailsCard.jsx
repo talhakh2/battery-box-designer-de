@@ -1,4 +1,4 @@
-export function DetailsCard({ modelNo, cellType, lengthMm, widthMm, heightMm, rows, columns }) {
+export function DetailsCard({ modelNo, cellType }) {
   return (
     <section className="detailsCard">
       <div className="detailsHeader">
@@ -16,24 +16,6 @@ export function DetailsCard({ modelNo, cellType, lengthMm, widthMm, heightMm, ro
         <div className="kv">
           <div className="k">Cell Type</div>
           <div className="v">{cellType || '—'}</div>
-        </div>
-        <div className="kv">
-          <div className="k">Length</div>
-          <div className="v">{lengthMm} mm</div>
-        </div>
-        <div className="kv">
-          <div className="k">Width</div>
-          <div className="v">{widthMm} mm</div>
-        </div>
-        <div className="kv">
-          <div className="k">Height</div>
-          <div className="v">{heightMm} mm</div>
-        </div>
-        <div className="kv">
-          <div className="k">Layout</div>
-          <div className="v">
-            {rows} rows × {columns} columns ({rows * columns} cells)
-          </div>
         </div>
       </div>
     </section>

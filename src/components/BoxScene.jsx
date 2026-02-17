@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber'
-import { Bounds, Edges, Environment, OrbitControls } from '@react-three/drei'
+import { Billboard, Bounds, Edges, Environment, Line, OrbitControls, RoundedBox, Text } from '@react-three/drei'
 import * as THREE from 'three'
 import { useMemo } from 'react'
 
@@ -49,6 +49,77 @@ function CellGrid({ w, h, l, rows, cols }) {
   )
 }
 
+function DimLabel({ position, text, color = '#000000' }) {
+  const bgW = Math.min(3.2, Math.max(1.25, text.length * 0.12))
+  const bgH = 0.34
+  return (
+    <Billboard follow>
+      <group position={position}>
+        <RoundedBox args={[bgW, bgH, 0.06]} radius={0.08} smoothness={6} renderOrder={999}>
+          <meshBasicMaterial color="#ffffff" transparent opacity={0.94} depthTest={false} depthWrite={false} />
+        </RoundedBox>
+        <Text
+          position={[0, 0, 0.04]}
+          fontSize={0.22}
+          color={color}
+          outlineWidth={0.02}
+          outlineColor="#ffffff"
+          outlineOpacity={1}
+          depthTest={false}
+          depthWrite={false}
+          renderOrder={1000}
+        >
+          {text}
+        </Text>
+      </group>
+    </Billboard>
+  )
+}
+
+function DimensionGuides({ w, h, l, lengthMm, widthMm, heightMm }) {
+  const pad = 0.34
+  const yTop = h / 2 + pad
+  const yBottom = -h / 2 - pad
+  const xRight = w / 2 + pad
+  const xLeft = -w / 2 - pad
+  const zFront = -l / 2 - pad
+  const zBack = l / 2 + pad
+
+  return (
+    <group>
+      {/* Width (X axis) */}
+      <Line
+        points={[
+          [-w / 2, yTop, zFront],
+          [w / 2, yTop, zFront],
+        ]}
+        color="#f97316"
+        lineWidth={2}
+      />
+
+      {/* Length (Z axis) */}
+      <Line
+        points={[
+          [xLeft, yBottom, -l / 2],
+          [xLeft, yBottom, l / 2],
+        ]}
+        color="#8b5cf6"
+        lineWidth={2}
+      />
+
+      {/* Height (Y axis) */}
+      <Line
+        points={[
+          [xRight, -h / 2, zBack],
+          [xRight, h / 2, zBack],
+        ]}
+        color="#22c55e"
+        lineWidth={2}
+      />
+    </group>
+  )
+}
+
 function BoxModel({ lengthMm, widthMm, heightMm, rows, columns }) {
   const w = mmToSceneUnits(widthMm)
   const h = mmToSceneUnits(heightMm)
@@ -67,6 +138,9 @@ function BoxModel({ lengthMm, widthMm, heightMm, rows, columns }) {
 
       {/* Cells inside */}
       <CellGrid w={w} h={h} l={l} rows={rows} cols={columns} />
+
+      {/* Dimension labels (L/W/H) */}
+      <DimensionGuides w={w} h={h} l={l} lengthMm={lengthMm} widthMm={widthMm} heightMm={heightMm} />
     </group>
   )
 }
@@ -77,7 +151,7 @@ export function BoxScene({ lengthMm, widthMm, heightMm, rows, columns }) {
       shadows
       dpr={[1, 2]}
       gl={{ antialias: true, preserveDrawingBuffer: true }}
-      camera={{ position: [2.7, 2.2, 2.7], fov: 45, near: 0.1, far: 100 }}
+      camera={{ position: [0, 1.1, 4.2], fov: 45, near: 0.1, far: 100 }}
     >
       <color attach="background" args={['#f8fafc']} />
       <ambientLight intensity={0.6} />

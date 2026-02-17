@@ -27,12 +27,15 @@
   min-width: 0;
 }
 
-.brandMark {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 60%, #22c55e 100%);
-  box-shadow: 0 10px 24px rgba(79, 70, 229, 0.18);
+.brandLogo {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  padding: 10px;
+  object-fit: contain;
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.12);
 }
 
 .brandTitle {

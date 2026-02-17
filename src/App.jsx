@@ -104,7 +104,7 @@ function App() {
     <div className="page">
       <header className="topbar">
         <div className="brand">
-          <div className="brandMark" aria-hidden="true" />
+          <img className="brandLogo" src="/logo.svg" alt="Battery Box Designer logo" />
           <div>
             <div className="brandTitle">Battery Box Layout Designer</div>
             <div className="brandSub">Enter dimensions + layout, generate a 3D box, export as PDF.</div>
@@ -183,12 +183,13 @@ function App() {
                     <span className="chip">W: {preview.widthMm} mm</span>
                     <span className="chip">H: {preview.heightMm} mm</span>
                     <span className="chip">
-                      Layout: {preview.rows} × {preview.columns}
+                      Layout: {preview.rows} × {preview.columns} = {preview.rows * preview.columns}
                     </span>
                   </div>
                 </div>
                 <div className="canvasWrap">
                   <BoxScene
+                    key={`${preview.lengthMm}-${preview.widthMm}-${preview.heightMm}-${preview.rows}-${preview.columns}`}
                     lengthMm={preview.lengthMm}
                     widthMm={preview.widthMm}
                     heightMm={preview.heightMm}
@@ -201,11 +202,6 @@ function App() {
               <DetailsCard
                 modelNo={preview.modelNo}
                 cellType={preview.cellType}
-                lengthMm={preview.lengthMm}
-                widthMm={preview.widthMm}
-                heightMm={preview.heightMm}
-                rows={preview.rows}
-                columns={preview.columns}
               />
             </div>
           )}
