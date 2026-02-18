@@ -131,12 +131,14 @@ function App() {
 
   const onDownload = async () => {
     if (!exportRef.current || !preview) return
-    const safeModel = (preview.modelNo || 'design').replaceAll(/[^\w-]+/g, '_').slice(0, 50)
+    const safeName  = (preview.customerName || '').replaceAll(/[^\w-]+/g, '_')
+    const safeModel = (preview.modelNo      || 'design').replaceAll(/[^\w-]+/g, '_')
+    const filename  = [safeName, safeModel].filter(Boolean).join('_').slice(0, 80) + '.pdf'
     setIsExporting(true)
     await new Promise((r) => window.requestAnimationFrame(r))
     await new Promise((r) => setTimeout(r, 80))
     try {
-      await downloadPdfFromElement(exportRef.current, `${safeModel}_box_layout.pdf`)
+      await downloadPdfFromElement(exportRef.current, filename)
     } finally {
       setIsExporting(false)
     }
