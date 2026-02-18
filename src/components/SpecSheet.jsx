@@ -11,7 +11,7 @@ export function SpecSheet({
   modelNo, cellType, cellVariant, is4P,
   cellWidthMm, cellLengthMm, cellHeightMm,
   capacityAh, cellWeightKg, totalWeightKg,
-  lengthMm, widthMm, heightMm,
+  lengthMm, widthMm, h1Mm, h2Mm,
   rows, columns, totalCells,
 }) {
   const hasParsed = cellVariant != null
@@ -28,9 +28,10 @@ export function SpecSheet({
       <div className="specGrid">
         <SpecItem label="Machine Model"   value={modelNo || '—'}                      accent="#4f46e5" />
         <SpecItem label="Cell Type"  value={cellType || '—'}                     accent="#06b6d4" />
-        <SpecItem label="Box Length" value={`${lengthMm} mm`}                    accent="#8b5cf6" />
-        <SpecItem label="Box Width"  value={`${widthMm} mm`}                     accent="#f97316" />
-        <SpecItem label="Box Height" value={`${heightMm} mm`}                    accent="#22c55e" />
+        <SpecItem label="Box Length" value={`${lengthMm} mm`}                              accent="#8b5cf6" />
+        <SpecItem label="Box Width"  value={`${widthMm} mm`}                             accent="#f97316" />
+        <SpecItem label={h2Mm !== h1Mm ? 'Box H1 (Along Length)' : 'Box Height'} value={`${h1Mm} mm`} accent="#22c55e" />
+        {h2Mm !== h1Mm && <SpecItem label="Box H2 (Along Width)"  value={`${h2Mm} mm`}  accent="#a855f7" />}
         <SpecItem label="Layout"     value={`${rows} × ${columns} = ${totalCells} cells`} accent="#0f172a" />
       </div>
 

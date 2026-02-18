@@ -609,6 +609,65 @@ input:focus {
 }
 
 /* ─── Box Color radio group ──────────────────── */
+/* ─── Segmented Buttons (Cell Make / Hole Count) ─────────────── */
+.segmentedGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.segmentedOption {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  border: 2px solid rgba(15, 23, 42, 0.12);
+  border-radius: 12px;
+  padding: 7px 14px;
+  background: #f8fafc;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+
+.segmentedOption input[type="radio"] {
+  display: none;
+  width: auto;
+}
+
+.segmentedLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.7);
+}
+
+.segmentedDesc {
+  font-size: 11px;
+  color: rgba(15, 23, 42, 0.45);
+}
+
+.segmentedOption.selected {
+  border-color: #0B1F3A;
+  background: #0B1F3A;
+  box-shadow: 0 0 0 3px rgba(11, 31, 58, 0.12);
+}
+
+.segmentedOption.selected .segmentedLabel,
+.segmentedOption.selected .segmentedDesc {
+  color: #ffffff;
+}
+
+/* HOP — green when selected */
+.segmentedOption.cellMakeHOP.selected {
+  border-color: #15803d;
+  background: #15803d;
+}
+
+/* H2 chip */
+.chipH2 {
+  background: rgba(168, 85, 247, 0.12);
+  color: #7e22ce;
+}
+
 .colorRadioGroup {
   display: flex;
   flex-wrap: wrap;
