@@ -92,25 +92,27 @@ function BatteryCell({ size, index, cellMake }) {
   const tOffX = cw * 0.27
 
   // ── Colors based on Cell Make ──
-  const isHOP     = cellMake === 'HOP'
-  const bodyColor = isHOP ? '#4ade80' : '#b0b8c4'
-  const topColor  = isHOP ? '#bbf7d0' : '#d1d9e0'
-  const capColor  = isHOP ? '#ffffff' : '#1e293b'
-  const dotColor  = isHOP ? '#86efac' : '#f8fafc'
+  const isHOP      = cellMake === 'HOP'
+  const bodyColor  = isHOP ? '#052e16' : '#0f172a'
+  const bodyEmissive = isHOP ? '#14532d' : '#1e293b'
+  const topColor   = isHOP ? '#166534' : '#1e293b'
+  const capColor   = isHOP ? '#f0fdf4' : '#f1f5f9'
+  const dotColor   = isHOP ? '#4ade80' : '#94a3b8'
+  const edgeColor  = isHOP ? '#4ade80' : '#475569'
 
   return (
     <group>
       <mesh castShadow receiveShadow>
         <boxGeometry args={[cw, ch, cl]} />
-        <meshStandardMaterial color={bodyColor} roughness={0.28} metalness={0.55} />
+        <meshStandardMaterial color={bodyColor} emissive={bodyEmissive} emissiveIntensity={0.6} roughness={0.4} metalness={0.05} />
       </mesh>
       <mesh position={[0, topY - 0.003, 0]}>
         <boxGeometry args={[cw * 0.96, 0.006, cl * 0.96]} />
-        <meshStandardMaterial color={topColor} roughness={0.2} metalness={0.6} />
+        <meshStandardMaterial color={topColor} emissive={topColor} emissiveIntensity={0.3} roughness={0.3} metalness={0.05} />
       </mesh>
       <mesh>
         <boxGeometry args={[cw, ch, cl]} />
-        <Edges color="#334155" threshold={10} />
+        <Edges color={edgeColor} threshold={10} />
       </mesh>
       <group position={[-tOffX, topY, 0]}><Terminal cellW={cw} cellL={cl} /></group>
       <group position={[ tOffX, topY, 0]}><Terminal cellW={cw} cellL={cl} /></group>

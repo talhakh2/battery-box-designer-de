@@ -73,40 +73,39 @@ async function downloadPdfFromElement(element, filename) {
 
 function App() {
   const [form, setForm]           = useState(DEFAULTS)
-  const [submitted, setSubmitted] = useState(null)
+  const [hasCreated, setHasCreated] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
   const exportRef  = useRef(null)
   const boxSceneRef = useRef(null)
 
+  // preview is always derived from the LIVE form — no submit needed after first creation
   const preview = useMemo(() => {
-    if (!submitted) return null
+    if (!hasCreated) return null
 
-    const lengthMm = clampFloat(submitted.lengthMm, { min: 1, max: 5000, fallback: 1 })
-    const widthMm  = clampFloat(submitted.widthMm,  { min: 1, max: 5000, fallback: 1 })
-    const h1Mm     = clampFloat(submitted.h1Mm,     { min: 1, max: 5000, fallback: 1 })
-    const h2Mm     = (submitted.h2Mm !== '' && submitted.h2Mm != null)
-      ? clampFloat(submitted.h2Mm, { min: 1, max: 5000, fallback: h1Mm })
+    const lengthMm = clampFloat(form.lengthMm, { min: 1, max: 5000, fallback: 1 })
+    const widthMm  = clampFloat(form.widthMm,  { min: 1, max: 5000, fallback: 1 })
+    const h1Mm     = clampFloat(form.h1Mm,     { min: 1, max: 5000, fallback: 1 })
+    const h2Mm     = (form.h2Mm !== '' && form.h2Mm != null)
+      ? clampFloat(form.h2Mm, { min: 1, max: 5000, fallback: h1Mm })
       : h1Mm
-    const rows     = clampInt(submitted.rows,    { min: 1, max: 60, fallback: 1 })
-    const columns  = clampInt(submitted.columns, { min: 1, max: 60, fallback: 1 })
-    const cellTypeRaw = String(submitted.cellType || '').trim()
+    const rows     = clampInt(form.rows,    { min: 1, max: 60, fallback: 1 })
+    const columns  = clampInt(form.columns, { min: 1, max: 60, fallback: 1 })
+    const cellTypeRaw = String(form.cellType || '').trim()
 
-    // Parse cell type — look up full spec from table
     const parsed = parseCellType(cellTypeRaw)
     const totalCells = rows * columns
 
-    const boxColorId  = submitted.boxColor || 'black'
+    const boxColorId  = form.boxColor || 'black'
     const boxColorHex = BOX_COLORS.find(c => c.id === boxColorId)?.hex ?? '#0f172a'
 
     return {
       lengthMm, widthMm, h1Mm, h2Mm, rows, columns,
-      customerName:  String(submitted.customerName || '').trim(),
-      modelNo:       String(submitted.modelNo || '').trim(),
-      cellType:     cellTypeRaw,
+      customerName:  String(form.customerName || '').trim(),
+      modelNo:       String(form.modelNo || '').trim(),
+      cellType:      cellTypeRaw,
       boxColorId,
       boxColorHex,
       parsed,
-      // Cell dimensions (null if not found in table)
       cellWidthMm:   parsed?.widthMm     ?? null,
       cellLengthMm:  parsed?.lengthMm    ?? null,
       cellHeightMm:  parsed?.heightMm    ?? null,
@@ -115,21 +114,19 @@ function App() {
       cellWeightKg:  parsed?.weightKg    ?? null,
       plates:        parsed?.plates      ?? null,
       is4P:          parsed?.is4P        ?? false,
-      // Derived totals
       totalCells,
       totalWeightKg:  parsed ? +(parsed.weightKg * totalCells).toFixed(1) : null,
-      // New fields
-      cellMake:       submitted.cellMake      || 'TAB',
-      holeCount:      Number(submitted.holeCount || 0),
-      holeDiameterMm: clampFloat(submitted.holeDiameterMm, { min: 10, max: 500, fallback: 50 }),
+      cellMake:       form.cellMake      || 'TAB',
+      holeCount:      Number(form.holeCount || 0),
+      holeDiameterMm: clampFloat(form.holeDiameterMm, { min: 10, max: 500, fallback: 50 }),
     }
-  }, [submitted])
+  }, [form, hasCreated])
 
   const onChange = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
 
   const onSubmit = (e) => {
     e.preventDefault()
-    setSubmitted(form)
+    setHasCreated(true)
     window.requestAnimationFrame(() => {
       document.getElementById('preview')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     })
@@ -137,7 +134,7 @@ function App() {
 
   const onReset = () => {
     setForm(DEFAULTS)
-    setSubmitted(null)
+    setHasCreated(false)
   }
 
   const onDownload = async () => {
@@ -363,6 +360,7 @@ function App() {
                 rows={preview.rows}
                 columns={preview.columns}
                 totalCells={preview.totalCells}
+                cellMake={preview.cellMake}
               />
 
               {/* ── 3-D diagram ── */}
@@ -391,7 +389,6 @@ function App() {
                 <div className="canvasWrap">
                   <BoxScene
                     ref={boxSceneRef}
-                    key={`${preview.lengthMm}-${preview.widthMm}-${preview.h1Mm}-${preview.h2Mm}-${preview.cellHeightMm}-${preview.rows}-${preview.columns}-${preview.boxColorId}-${preview.cellMake}-${preview.holeCount}-${preview.holeDiameterMm}`}
                     lengthMm={preview.lengthMm}
                     widthMm={preview.widthMm}
                     h1Mm={preview.h1Mm}

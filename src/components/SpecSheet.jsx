@@ -7,12 +7,15 @@ function SpecItem({ label, value, accent, wide }) {
   )
 }
 
+const CELL_MAKE_LABEL = { HOP: 'HOP', TAB: 'TAB', EXI: 'EXI' }
+
 export function SpecSheet({
   modelNo, cellType, cellVariant, is4P,
   cellWidthMm, cellLengthMm, cellHeightMm,
   capacityAh, cellWeightKg, totalWeightKg,
   lengthMm, widthMm, h1Mm, h2Mm,
   rows, columns, totalCells,
+  cellMake,
 }) {
   const hasParsed = cellVariant != null
 
@@ -33,6 +36,7 @@ export function SpecSheet({
         <SpecItem label={h2Mm !== h1Mm ? 'Box H1 (Along Length)' : 'Box Height'} value={`${h1Mm} mm`} accent="#22c55e" />
         {h2Mm !== h1Mm && <SpecItem label="Box H2 (Along Width)"  value={`${h2Mm} mm`}  accent="#a855f7" />}
         <SpecItem label="Layout"     value={`${rows} × ${columns} = ${totalCells} cells`} accent="#0f172a" />
+        {cellMake && <SpecItem label="Cell Make" value={CELL_MAKE_LABEL[cellMake] ?? cellMake} accent={cellMake === 'HOP' ? '#15803d' : '#475569'} />}
       </div>
 
       {/* ── Cell specification (only when lookup matched) ── */}
