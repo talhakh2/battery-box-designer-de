@@ -1,5 +1,5 @@
 import './App.css'
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState, useCallback } from 'react'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 import { BoxScene } from './components/BoxScene'
@@ -7,6 +7,8 @@ import { DetailsCard } from './components/DetailsCard'
 import { PdfHeader } from './components/PdfHeader'
 import { SpecSheet } from './components/SpecSheet'
 import { findAlternativeCells, parseCellType } from './utils/parseCellType'
+import { ToastContainer } from './components/Toast'
+import { Spinner } from './components/Spinner'
 
 const BOX_COLORS = [
   { id: 'black',      label: 'Black',      hex: '#0f172a' },
@@ -82,8 +84,18 @@ function App() {
   const [expandedAlternatives, setExpandedAlternatives] = useState({})
   const [altSortBy, setAltSortBy] = useState('heightAsc')
   const [createdAt, setCreatedAt] = useState(null)
+  const [toasts, setToasts] = useState([])
   const exportRef  = useRef(null)
   const boxSceneRef = useRef(null)
+
+  const addToast = useCallback((message, type = 'success', duration = 3000) => {
+    const id = Date.now() + Math.random()
+    setToasts(prev => [...prev, { id, message, type, duration }])
+  }, [])
+
+  const removeToast = useCallback((id) => {
+    setToasts(prev => prev.filter(t => t.id !== id))
+  }, [])
   const parsedLiveCellType = useMemo(() => parseCellType(form.cellType), [form.cellType])
   const alternativeCells = useMemo(
     () => findAlternativeCells(parsedLiveCellType, form.altMinHeightMm, form.altMaxHeightMm),
@@ -186,6 +198,10 @@ function App() {
     await new Promise((r) => setTimeout(r, 80))
     try {
       await downloadPdfFromElement(exportRef.current, filename)
+      addToast(`PDF downloaded: ${filename}`, 'success', 4000)
+    } catch (err) {
+      addToast('Failed to download PDF', 'error', 4000)
+      console.error(err)
     } finally {
       setIsExporting(false)
     }
@@ -203,8 +219,15 @@ function App() {
         </div>
         <div className="topActions">
           <button type="button" className="secondary" onClick={onReset}>Reset</button>
-          <button type="button" onClick={onDownload} disabled={!preview || isExporting}>
-            {isExporting ? 'Generating…' : 'Download PDF'}
+          <button type="button" onClick={onDownload} disabled={!preview || isExporting} className="primaryBtn">
+            {isExporting ? (
+              <>
+                <Spinner size="sm" />
+                <span>Generating PDF…</span>
+              </>
+            ) : (
+              '⬇ Download PDF'
+            )}
           </button>
         </div>
       </header>
@@ -619,6 +642,8 @@ function App() {
           )}
         </section>
       </main>
+
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   )
 }
