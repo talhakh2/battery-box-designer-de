@@ -6,7 +6,7 @@ import { BoxScene } from './components/BoxScene'
 import { DetailsCard } from './components/DetailsCard'
 import { PdfHeader } from './components/PdfHeader'
 import { SpecSheet } from './components/SpecSheet'
-import { parseCellType } from './utils/parseCellType'
+import { findAlternativeCells, parseCellType } from './utils/parseCellType'
 
 const BOX_COLORS = [
   { id: 'black',      label: 'Black',      hex: '#0f172a' },
@@ -25,11 +25,14 @@ const DEFAULTS = {
   rows:          8,
   columns:       1,
   modelNo:       'CATL LFP 3.22V 228Ah - 8S1P',
+  plugType:      '',
   cellType:      '4PzS500',
   boxColor:      'black',
   cellMake:      'TAB',  // HOP | TAB | EXI
   holeCount:     '0',   // 0 | 1 | 2
   holeDiameterMm: 50,
+  altMinHeightMm: '',
+  altMaxHeightMm: '',
 }
 
 function clampInt(value, { min, max, fallback }) {
@@ -75,8 +78,15 @@ function App() {
   const [form, setForm]           = useState(DEFAULTS)
   const [hasCreated, setHasCreated] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
+  const [showAlternatives, setShowAlternatives] = useState(false)
+  const [expandedAlternatives, setExpandedAlternatives] = useState({})
   const exportRef  = useRef(null)
   const boxSceneRef = useRef(null)
+  const parsedLiveCellType = useMemo(() => parseCellType(form.cellType), [form.cellType])
+  const alternativeCells = useMemo(
+    () => findAlternativeCells(parsedLiveCellType, form.altMinHeightMm, form.altMaxHeightMm),
+    [parsedLiveCellType, form.altMinHeightMm, form.altMaxHeightMm]
+  )
 
   // preview is always derived from the LIVE form — no submit needed after first creation
   const preview = useMemo(() => {
@@ -102,6 +112,7 @@ function App() {
       lengthMm, widthMm, h1Mm, h2Mm, rows, columns,
       customerName:  String(form.customerName || '').trim(),
       modelNo:       String(form.modelNo || '').trim(),
+      plugType:      String(form.plugType || '').trim(),
       cellType:      cellTypeRaw,
       boxColorId,
       boxColorHex,
@@ -135,6 +146,8 @@ function App() {
   const onReset = () => {
     setForm(DEFAULTS)
     setHasCreated(false)
+    setShowAlternatives(false)
+    setExpandedAlternatives({})
   }
 
   const onDownload = async () => {
@@ -186,6 +199,11 @@ function App() {
             <label className="field">
               <span>Machine Model</span>
               <input value={form.modelNo} onChange={onChange('modelNo')} placeholder="e.g. CATL LFP 3.22V 228Ah" />
+            </label>
+
+            <label className="field">
+              <span>Plug Type</span>
+              <input value={form.plugType} onChange={onChange('plugType')} placeholder="e.g. SB175" />
             </label>
 
             {/* 2 — Box Dimensions */}
@@ -242,23 +260,100 @@ function App() {
 
             {/* Live parse preview */}
             {(() => {
-              const p = parseCellType(form.cellType)
+              const p = parsedLiveCellType
               if (!p) return null
               return (
-                <div className="parsedBadge">
-                  <span className="parsedIcon">✓</span>
-                  <div className="parsedBody">
-                    <strong>{p.designation}</strong> detected
-                    <div className="parsedGrid">
-                      <span>Width</span>      <strong>{p.widthMm} mm</strong>
-                      <span>Length</span>     <strong>{p.lengthMm} mm</strong>
-                      <span>Height</span>     <strong>{p.heightMm} mm</strong>
-                      <span>Capacity</span>   <strong>{p.capacityAh} Ah</strong>
-                      <span>Cell weight</span><strong>{p.weightKg} kg</strong>
-                      {p.is4P && <><span>Config</span><strong>4-Post</strong></>}
+                <>
+                  <div className="parsedBadge">
+                    <span className="parsedIcon">✓</span>
+                    <div className="parsedBody">
+                      <strong>{p.designation}</strong> detected
+                      <div className="parsedGrid">
+                        <span>Width</span>      <strong>{p.widthMm} mm</strong>
+                        <span>Length</span>     <strong>{p.lengthMm} mm</strong>
+                        <span>Height</span>     <strong>{p.heightMm} mm</strong>
+                        <span>Capacity</span>   <strong>{p.capacityAh} Ah</strong>
+                        <span>Cell weight</span><strong>{p.weightKg} kg</strong>
+                        {p.is4P && <><span>Config</span><strong>4-Post</strong></>}
+                      </div>
                     </div>
                   </div>
-                </div>
+                  <div className="altPanel">
+                    <button
+                      type="button"
+                      className="altToggleBtn"
+                      onClick={() => setShowAlternatives(v => !v)}
+                    >
+                      {showAlternatives ? 'Hide Alternative Cells' : 'Show Alternative Cells'}
+                    </button>
+                    {showAlternatives && (
+                      <div className="altBody">
+                        <div className="grid2">
+                          <label className="field">
+                            <span>Min Height (mm)</span>
+                            <input
+                              inputMode="decimal"
+                              value={form.altMinHeightMm}
+                              onChange={onChange('altMinHeightMm')}
+                              placeholder="e.g. 500"
+                            />
+                          </label>
+                          <label className="field">
+                            <span>Max Height (mm)</span>
+                            <input
+                              inputMode="decimal"
+                              value={form.altMaxHeightMm}
+                              onChange={onChange('altMaxHeightMm')}
+                              placeholder="e.g. 750"
+                            />
+                          </label>
+                        </div>
+                        {alternativeCells.length > 0 ? (
+                          <div className="altResults">
+                            {alternativeCells.map(cell => (
+                              <div className="altResultCard" key={cell.designation}>
+                                <button
+                                  type="button"
+                                  className="altResultToggle"
+                                  onClick={() =>
+                                    setExpandedAlternatives((prev) => ({
+                                      ...prev,
+                                      [cell.designation]: !prev[cell.designation],
+                                    }))
+                                  }
+                                >
+                                  <span className="parsedIcon">✓</span>
+                                  <span className="altResultTitle">{cell.designation}</span>
+                                  <span className="altResultState">
+                                    {expandedAlternatives[cell.designation] ? 'Hide' : 'Show'}
+                                  </span>
+                                </button>
+                                {expandedAlternatives[cell.designation] && (
+                                  <div className="parsedBadge">
+                                    <div className="parsedBody">
+                                      <div className="parsedGrid">
+                                        <span>Width</span>      <strong>{cell.widthMm} mm</strong>
+                                        <span>Length</span>     <strong>{cell.lengthMm} mm</strong>
+                                        <span>Height</span>     <strong>{cell.heightMm} mm</strong>
+                                        <span>Capacity</span>   <strong>{cell.capacityAh} Ah</strong>
+                                        <span>Cell weight</span><strong>{cell.weightKg} kg</strong>
+                                        {cell.is4P && <><span>Config</span><strong>4-Post</strong></>}
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="altEmpty">
+                            No alternatives found in this height range for the same plate/series and dimensions.
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </>
               )
             })()}
 
@@ -344,6 +439,7 @@ function App() {
               {/* ── Spec sheet ── */}
               <SpecSheet
                 modelNo={preview.modelNo}
+                plugType={preview.plugType}
                 cellType={preview.cellType}
                 cellVariant={preview.cellVariant}
                 cellWidthMm={preview.cellWidthMm}

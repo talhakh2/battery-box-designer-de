@@ -752,6 +752,83 @@ input:focus {
   color: #0b1220;
 }
 
+.altPanel {
+  margin-top: 10px;
+}
+
+.altToggleBtn {
+  width: 100%;
+  text-align: left;
+  background: #0b1f3a;
+  border-radius: 12px;
+  padding: 9px 12px;
+}
+
+.altBody {
+  margin-top: 8px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 12px;
+  padding: 10px;
+  background: rgba(248, 250, 252, 0.7);
+  display: grid;
+  gap: 10px;
+}
+
+.altResults {
+  display: grid;
+  gap: 8px;
+}
+
+.altResultCard {
+  border: 1px solid rgba(34, 197, 94, 0.28);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(6,182,212,0.08) 100%);
+  overflow: hidden;
+}
+
+.altResultToggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: #0b1220;
+  padding: 10px 12px;
+}
+
+.altResultToggle:hover {
+  transform: none;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.altResultTitle {
+  font-weight: 900;
+}
+
+.altResultState {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.65);
+}
+
+.altResultCard .parsedBadge {
+  margin: 0;
+  border: none;
+  border-top: 1px solid rgba(34, 197, 94, 0.22);
+  border-radius: 0;
+  background: transparent;
+}
+
+.altEmpty {
+  font-size: 12px;
+  color: rgba(15, 23, 42, 0.65);
+  padding: 6px 2px 2px;
+}
+
 /* Section label inside spec sheet */
 .specSectionLabel {
   font-size: 10px;

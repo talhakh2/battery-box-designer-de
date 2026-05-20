@@ -225,5 +225,32 @@ export function parseCellType(cellType) {
   return { ...entry, designation: key }
 }
 
+/**
+ * Find alternative cells matching a reference cell by:
+ * - same variant (PzS/PzB)
+ * - same plate count
+ * - same width/length
+ * - height range (inclusive)
+ */
+export function findAlternativeCells(referenceCell, minHeightMm, maxHeightMm) {
+  if (!referenceCell) return []
+
+  const min = Number.parseFloat(String(minHeightMm))
+  const max = Number.parseFloat(String(maxHeightMm))
+  if (!Number.isFinite(min) || !Number.isFinite(max) || min > max) return []
+
+  return Object.entries(CELL_TABLE)
+    .map(([designation, cell]) => ({ ...cell, designation }))
+    .filter((cell) =>
+      cell.variant === referenceCell.variant &&
+      cell.plates === referenceCell.plates &&
+      cell.widthMm === referenceCell.widthMm &&
+      cell.lengthMm === referenceCell.lengthMm &&
+      cell.heightMm >= min &&
+      cell.heightMm <= max
+    )
+    .sort((a, b) => a.heightMm - b.heightMm || a.capacityAh - b.capacityAh)
+}
+
 /** Export the full table for autocomplete / dropdowns if needed */
 export { CELL_TABLE }

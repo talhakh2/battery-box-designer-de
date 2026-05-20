@@ -10,7 +10,7 @@ function SpecItem({ label, value, accent, wide }) {
 const CELL_MAKE_LABEL = { HOP: 'HOP', TAB: 'TAB', EXI: 'EXI' }
 
 export function SpecSheet({
-  modelNo, cellType, cellVariant, is4P,
+  modelNo, plugType, cellType, cellVariant, is4P,
   cellWidthMm, cellLengthMm, cellHeightMm,
   capacityAh, cellWeightKg, totalWeightKg,
   lengthMm, widthMm, h1Mm, h2Mm,
@@ -30,6 +30,7 @@ export function SpecSheet({
       <div className="specSectionLabel">Box Dimensions</div>
       <div className="specGrid">
         <SpecItem label="Machine Model"   value={modelNo || '—'}                      accent="#4f46e5" />
+        <SpecItem label="Plug Type"       value={plugType || '—'}                     accent="#1d4ed8" />
         <SpecItem label="Cell Type"  value={cellType || '—'}                     accent="#06b6d4" />
         <SpecItem label="Box Length" value={`${lengthMm} mm`}                              accent="#8b5cf6" />
         <SpecItem label="Box Width"  value={`${widthMm} mm`}                             accent="#f97316" />
