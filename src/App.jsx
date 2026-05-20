@@ -76,6 +76,48 @@ async function downloadPdfFromElement(element, filename) {
   pdf.save(filename)
 }
 
+function trackPdfDownload({ preview, form }) {
+  const url = import.meta.env.VITE_PDF_TRACKING_URL
+  const token = import.meta.env.VITE_PDF_TRACKING_TOKEN
+
+  if (!url || !token || !preview || !form) return
+
+  const boxColor = BOX_COLORS.find(c => c.id === form.boxColor)
+
+  const payload = {
+    token,
+    customerName: String(form.customerName || '').trim(),
+    modelNo: String(form.modelNo || '').trim(),
+    plugType: String(form.plugType || '').trim(),
+    lengthMm: form.lengthMm,
+    widthMm: form.widthMm,
+    h1Mm: form.h1Mm,
+    h2Mm: form.h2Mm,
+    boxColor: boxColor?.label || form.boxColor,
+    cellType: String(form.cellType || '').trim(),
+    cellMake: form.cellMake,
+    holeCount: form.holeCount,
+    holeDiameterMm: form.holeDiameterMm,
+    rows: form.rows,
+    columns: form.columns,
+    layout: `${preview.rows} x ${preview.columns}`,
+    totalCells: preview.totalCells,
+    altMinHeightMm: form.altMinHeightMm,
+    altMaxHeightMm: form.altMaxHeightMm,
+    userAgent: navigator.userAgent,
+  }
+
+  fetch(url, {
+    method: 'POST',
+    mode: 'no-cors',
+    keepalive: true,
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8',
+    },
+    body: JSON.stringify(payload),
+  }).catch(() => {})
+}
+
 function App() {
   const [form, setForm]           = useState(DEFAULTS)
   const [hasCreated, setHasCreated] = useState(false)
@@ -164,6 +206,8 @@ function App() {
       cellMake:       form.cellMake      || 'TAB',
       holeCount:      Number(form.holeCount || 0),
       holeDiameterMm: clampFloat(form.holeDiameterMm, { min: 10, max: 500, fallback: 50 }),
+      altMinHeightMm: String(form.altMinHeightMm || '').trim(),
+      altMaxHeightMm: String(form.altMaxHeightMm || '').trim(),
     }
   }, [form, hasCreated])
 
@@ -198,6 +242,7 @@ function App() {
     await new Promise((r) => setTimeout(r, 80))
     try {
       await downloadPdfFromElement(exportRef.current, filename)
+      trackPdfDownload({ preview, form })
       addToast(`PDF downloaded: ${filename}`, 'success', 4000)
     } catch (err) {
       addToast('Failed to download PDF', 'error', 4000)
@@ -226,7 +271,7 @@ function App() {
                 <span>Generating PDF…</span>
               </>
             ) : (
-              '⬇ Download PDF'
+              'Download PDF'
             )}
           </button>
         </div>
@@ -501,7 +546,7 @@ function App() {
             <section className="formSection">
               <div className="fieldGroupLabel">Output</div>
               <div className="formActions">
-                <button type="submit" disabled={isLayoutInvalid}>Create Diagram</button>
+                <button type="submit" className="primaryBtn" disabled={isLayoutInvalid}>Create Diagram</button>
                 <p className="hint">Tip: drag to rotate, scroll to zoom.</p>
               </div>
             </section>
@@ -575,7 +620,7 @@ function App() {
                   </div>
                   <div className="viewControls">
                     <button type="button" className="stdViewBtn" onClick={() => boxSceneRef.current?.resetToStandardView()} title="Reset to standard isometric view">
-                      ⊞ Standard
+                      Standard
                     </button>
                     <button type="button" className="stdViewBtn" onClick={() => boxSceneRef.current?.setView('top')} title="Top view">
                       Top
@@ -622,7 +667,7 @@ function App() {
                     {/* <span className="pdfFooterContact">📞 +966 11 204 4884</span> */}
                     {/* <span className="pdfFooterContact">📧 directenergy@dahbashi.com</span> */}
                     <a className="pdfFooterUrl" href="https://directenergy.dahbashi.com">
-                      🌐 directenergy.dahbashi.com
+                      directenergy.dahbashi.com
                     </a>
                   </div>
                 </div>
