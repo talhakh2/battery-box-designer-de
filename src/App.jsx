@@ -80,6 +80,8 @@ function App() {
   const [isExporting, setIsExporting] = useState(false)
   const [showAlternatives, setShowAlternatives] = useState(false)
   const [expandedAlternatives, setExpandedAlternatives] = useState({})
+  const [altSortBy, setAltSortBy] = useState('heightAsc')
+  const [createdAt, setCreatedAt] = useState(null)
   const exportRef  = useRef(null)
   const boxSceneRef = useRef(null)
   const parsedLiveCellType = useMemo(() => parseCellType(form.cellType), [form.cellType])
@@ -87,6 +89,26 @@ function App() {
     () => findAlternativeCells(parsedLiveCellType, form.altMinHeightMm, form.altMaxHeightMm),
     [parsedLiveCellType, form.altMinHeightMm, form.altMaxHeightMm]
   )
+  const sortedAlternativeCells = useMemo(() => {
+    const list = [...alternativeCells]
+    if (altSortBy === 'capacityDesc') return list.sort((a, b) => b.capacityAh - a.capacityAh || a.heightMm - b.heightMm)
+    if (altSortBy === 'closestHeight' && parsedLiveCellType) {
+      return list.sort((a, b) =>
+        Math.abs(a.heightMm - parsedLiveCellType.heightMm) - Math.abs(b.heightMm - parsedLiveCellType.heightMm)
+      )
+    }
+    return list.sort((a, b) => a.heightMm - b.heightMm || a.capacityAh - b.capacityAh)
+  }, [alternativeCells, altSortBy, parsedLiveCellType])
+  const closestAlternativeDesignation = sortedAlternativeCells[0]?.designation ?? null
+
+  const rawRows = Number.parseInt(String(form.rows), 10)
+  const rawCols = Number.parseInt(String(form.columns), 10)
+  const isLayoutInvalid = !Number.isFinite(rawRows) || !Number.isFinite(rawCols) || rawRows < 1 || rawCols < 1
+  const isCellTypeInvalid = String(form.cellType || '').trim() !== '' && !parsedLiveCellType
+  const altMin = Number.parseFloat(String(form.altMinHeightMm))
+  const altMax = Number.parseFloat(String(form.altMaxHeightMm))
+  const hasAltInputs = form.altMinHeightMm !== '' || form.altMaxHeightMm !== ''
+  const isAltRangeInvalid = hasAltInputs && (!Number.isFinite(altMin) || !Number.isFinite(altMax) || altMin > altMax)
 
   // preview is always derived from the LIVE form — no submit needed after first creation
   const preview = useMemo(() => {
@@ -137,7 +159,9 @@ function App() {
 
   const onSubmit = (e) => {
     e.preventDefault()
+    if (isLayoutInvalid) return
     setHasCreated(true)
+    setCreatedAt(new Date())
     window.requestAnimationFrame(() => {
       document.getElementById('preview')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     })
@@ -148,6 +172,8 @@ function App() {
     setHasCreated(false)
     setShowAlternatives(false)
     setExpandedAlternatives({})
+    setAltSortBy('heightAsc')
+    setCreatedAt(null)
   }
 
   const onDownload = async () => {
@@ -188,47 +214,46 @@ function App() {
         <section className="panel">
           <h2 className="panelTitle">Inputs</h2>
           <form className="form" onSubmit={onSubmit}>
-
-            {/* 0 — Customer Name */}
-            <label className="field">
-              <span>Customer Name</span>
-              <input value={form.customerName} onChange={onChange('customerName')} placeholder="e.g. Acme Corporation" />
-            </label>
-
-            {/* 1 — Machine Model */}
-            <label className="field">
-              <span>Machine Model</span>
-              <input value={form.modelNo} onChange={onChange('modelNo')} placeholder="e.g. CATL LFP 3.22V 228Ah" />
-            </label>
-
-            <label className="field">
-              <span>Plug Type</span>
-              <input value={form.plugType} onChange={onChange('plugType')} placeholder="e.g. SB175" />
-            </label>
-
-            {/* 2 — Box Dimensions */}
-            <div className="fieldGroupLabel">Box Dimensions</div>
-            <div className="grid2">
+            <section className="formSection">
+              <div className="fieldGroupLabel">Project Details</div>
               <label className="field">
-                <span>Length (mm)</span>
-                <input inputMode="decimal" value={form.lengthMm} onChange={onChange('lengthMm')} placeholder="e.g. 621" />
+                <span>Customer Name</span>
+                <input value={form.customerName} onChange={onChange('customerName')} placeholder="e.g. Acme Corporation" />
               </label>
               <label className="field">
-                <span>Width (mm)</span>
-                <input inputMode="decimal" value={form.widthMm} onChange={onChange('widthMm')} placeholder="e.g. 209" />
+                <span>Machine Model</span>
+                <input value={form.modelNo} onChange={onChange('modelNo')} placeholder="e.g. CATL LFP 3.22V 228Ah" />
               </label>
               <label className="field">
-                <span>H1 — Height along Length (mm)</span>
-                <input inputMode="decimal" value={form.h1Mm} onChange={onChange('h1Mm')} placeholder="e.g. 625" />
+                <span>Plug Type</span>
+                <input value={form.plugType} onChange={onChange('plugType')} placeholder="e.g. SB175" />
               </label>
-              <label className="field">
-                <span>H2 — Height along Width (mm)</span>
-                <input inputMode="decimal" value={form.h2Mm} onChange={onChange('h2Mm')} placeholder="Same as H1" />
-              </label>
-            </div>
+            </section>
 
-            {/* 3 — Box Color */}
-            <div className="fieldGroupLabel">Box Color</div>
+            <section className="formSection">
+              <div className="fieldGroupLabel">Box Configuration</div>
+              <div className="grid2">
+                <label className="field">
+                  <span>Length (mm)</span>
+                  <input inputMode="decimal" value={form.lengthMm} onChange={onChange('lengthMm')} placeholder="e.g. 621" />
+                </label>
+                <label className="field">
+                  <span>Width (mm)</span>
+                  <input inputMode="decimal" value={form.widthMm} onChange={onChange('widthMm')} placeholder="e.g. 209" />
+                </label>
+                <label className="field">
+                  <span>H1 — Height along Length (mm)</span>
+                  <input inputMode="decimal" value={form.h1Mm} onChange={onChange('h1Mm')} placeholder="e.g. 625" />
+                </label>
+                <label className="field">
+                  <span>H2 — Height along Width (mm)</span>
+                  <input inputMode="decimal" value={form.h2Mm} onChange={onChange('h2Mm')} placeholder="Same as H1" />
+                </label>
+              </div>
+            </section>
+
+            <section className="formSection">
+              <div className="fieldGroupLabel">Color & Cell</div>
             <div className="colorRadioGroup">
               {BOX_COLORS.map(c => (
                 <label
@@ -248,7 +273,6 @@ function App() {
               ))}
             </div>
 
-            {/* 4 — Cell Type */}
             <label className="field">
               <span>Cell Type</span>
               <input
@@ -257,6 +281,9 @@ function App() {
                 placeholder="e.g. 4PzS500 or 4PzB500"
               />
             </label>
+            {isCellTypeInvalid && (
+              <div className="inlineError">Cell type not found in table. Use a valid PzS/PzB format.</div>
+            )}
 
             {/* Live parse preview */}
             {(() => {
@@ -308,9 +335,29 @@ function App() {
                             />
                           </label>
                         </div>
-                        {alternativeCells.length > 0 ? (
+                        {isAltRangeInvalid && (
+                          <div className="inlineError">Enter a valid height range (min must be less than or equal to max).</div>
+                        )}
+                        <div className="altTools">
+                          <span className="altToolsLabel">Sort</span>
+                          <div className="segmentedGroup">
+                            <label className={`segmentedOption${altSortBy === 'heightAsc' ? ' selected' : ''}`}>
+                              <input type="radio" name="altSortBy" value="heightAsc" checked={altSortBy === 'heightAsc'} onChange={() => setAltSortBy('heightAsc')} />
+                              <span className="segmentedLabel">Height ↑</span>
+                            </label>
+                            <label className={`segmentedOption${altSortBy === 'closestHeight' ? ' selected' : ''}`}>
+                              <input type="radio" name="altSortBy" value="closestHeight" checked={altSortBy === 'closestHeight'} onChange={() => setAltSortBy('closestHeight')} />
+                              <span className="segmentedLabel">Closest</span>
+                            </label>
+                            <label className={`segmentedOption${altSortBy === 'capacityDesc' ? ' selected' : ''}`}>
+                              <input type="radio" name="altSortBy" value="capacityDesc" checked={altSortBy === 'capacityDesc'} onChange={() => setAltSortBy('capacityDesc')} />
+                              <span className="segmentedLabel">Capacity ↓</span>
+                            </label>
+                          </div>
+                        </div>
+                        {!isAltRangeInvalid && sortedAlternativeCells.length > 0 ? (
                           <div className="altResults">
-                            {alternativeCells.map(cell => (
+                            {sortedAlternativeCells.map(cell => (
                               <div className="altResultCard" key={cell.designation}>
                                 <button
                                   type="button"
@@ -324,6 +371,9 @@ function App() {
                                 >
                                   <span className="parsedIcon">✓</span>
                                   <span className="altResultTitle">{cell.designation}</span>
+                                  {closestAlternativeDesignation === cell.designation && (
+                                    <span className="altClosestBadge">Best Match</span>
+                                  )}
                                   <span className="altResultState">
                                     {expandedAlternatives[cell.designation] ? 'Hide' : 'Show'}
                                   </span>
@@ -345,69 +395,93 @@ function App() {
                               </div>
                             ))}
                           </div>
-                        ) : (
+                        ) : !isAltRangeInvalid ? (
                           <div className="altEmpty">
                             No alternatives found in this height range for the same plate/series and dimensions.
                           </div>
-                        )}
+                        ) : null}
                       </div>
                     )}
                   </div>
                 </>
               )
             })()}
+            </section>
 
-            {/* 5 — Cell Make */}
-            <div className="fieldGroupLabel">Cell Make</div>
-            <div className="segmentedGroup">
-              {[
-                { value: 'HOP', label: 'HOP', desc: 'Green cells' },
-                { value: 'TAB', label: 'TAB', desc: 'Grey cells'  },
-                { value: 'EXI', label: 'EXI', desc: 'Grey cells'  },
-              ].map(({ value, label, desc }) => (
-                <label key={value} className={`segmentedOption${form.cellMake === value ? ' selected' : ''} cellMake${value}`}>
-                  <input type="radio" name="cellMake" value={value} checked={form.cellMake === value} onChange={onChange('cellMake')} />
-                  <span className="segmentedLabel">{label}</span>
-                  <span className="segmentedDesc">{desc}</span>
-                </label>
-              ))}
-            </div>
-
-            {/* 6 — Side Holes */}
-            <div className="fieldGroupLabel">Side Holes (Width Wall)</div>
-            <div className="segmentedGroup">
-              {[
-                { value: '0', label: 'None'    },
-                { value: '1', label: '1 Hole'  },
-                { value: '2', label: '2 Holes' },
-              ].map(opt => (
-                <label key={opt.value} className={`segmentedOption${form.holeCount === opt.value ? ' selected' : ''}`}>
-                  <input type="radio" name="holeCount" value={opt.value} checked={form.holeCount === opt.value} onChange={onChange('holeCount')} />
-                  <span className="segmentedLabel">{opt.label}</span>
-                </label>
-              ))}
-            </div>
-            {form.holeCount !== '0' && (
-              <label className="field">
-                <span>Hole Diameter (mm)</span>
-                <input inputMode="decimal" value={form.holeDiameterMm} onChange={onChange('holeDiameterMm')} placeholder="e.g. 50" />
-              </label>
-            )}
-
-            {/* 7 — Layout */}
-            <div className="field">
-              <span>Layout (rows × columns)</span>
-              <div className="layoutRow">
-                <input inputMode="numeric" value={form.rows}    onChange={onChange('rows')}    placeholder="rows" />
-                <span className="times" aria-hidden="true">×</span>
-                <input inputMode="numeric" value={form.columns} onChange={onChange('columns')} placeholder="cols" />
+            <section className="formSection">
+              <div className="fieldGroupLabel">Cell Layout</div>
+              <div className="fieldGroupLabel">Cell Make</div>
+              <div className="segmentedGroup">
+                {[
+                  { value: 'HOP', label: 'HOP', desc: 'Green cells' },
+                  { value: 'TAB', label: 'TAB', desc: 'Grey cells'  },
+                  { value: 'EXI', label: 'EXI', desc: 'Grey cells'  },
+                ].map(({ value, label, desc }) => (
+                  <label key={value} className={`segmentedOption${form.cellMake === value ? ' selected' : ''} cellMake${value}`}>
+                    <input type="radio" name="cellMake" value={value} checked={form.cellMake === value} onChange={onChange('cellMake')} />
+                    <span className="segmentedLabel">{label}</span>
+                    <span className="segmentedDesc">{desc}</span>
+                  </label>
+                ))}
               </div>
-            </div>
 
-            <div className="formActions">
-              <button type="submit">Create Diagram</button>
-              <p className="hint">Tip: drag to rotate, scroll to zoom.</p>
-            </div>
+              <div className="fieldGroupLabel">Side Holes (Width Wall)</div>
+              <div className="segmentedGroup">
+                {[
+                  { value: '0', label: 'None'    },
+                  { value: '1', label: '1 Hole'  },
+                  { value: '2', label: '2 Holes' },
+                ].map(opt => (
+                  <label key={opt.value} className={`segmentedOption${form.holeCount === opt.value ? ' selected' : ''}`}>
+                    <input type="radio" name="holeCount" value={opt.value} checked={form.holeCount === opt.value} onChange={onChange('holeCount')} />
+                    <span className="segmentedLabel">{opt.label}</span>
+                  </label>
+                ))}
+              </div>
+              {form.holeCount !== '0' && (
+                <label className="field">
+                  <span>Hole Diameter (mm)</span>
+                  <input inputMode="decimal" value={form.holeDiameterMm} onChange={onChange('holeDiameterMm')} placeholder="e.g. 50" />
+                </label>
+              )}
+
+              <div className="field">
+                <span>Layout (rows × columns)</span>
+                <div className="layoutRow">
+                  <input inputMode="numeric" value={form.rows}    onChange={onChange('rows')}    placeholder="rows" />
+                  <span className="times" aria-hidden="true">×</span>
+                  <input inputMode="numeric" value={form.columns} onChange={onChange('columns')} placeholder="cols" />
+                </div>
+                {isLayoutInvalid && (
+                  <div className="inlineError">Rows and columns must be whole numbers greater than 0.</div>
+                )}
+              </div>
+              <div className="presetRow">
+                {[
+                  { label: '8 × 1', rows: 8, columns: 1 },
+                  { label: '10 × 1', rows: 10, columns: 1 },
+                  { label: '12 × 1', rows: 12, columns: 1 },
+                  { label: '6 × 2', rows: 6, columns: 2 },
+                ].map((preset) => (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    className={`presetBtn${Number(form.rows) === preset.rows && Number(form.columns) === preset.columns ? ' active' : ''}`}
+                    onClick={() => setForm((f) => ({ ...f, rows: String(preset.rows), columns: String(preset.columns) }))}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className="formSection">
+              <div className="fieldGroupLabel">Output</div>
+              <div className="formActions">
+                <button type="submit" disabled={isLayoutInvalid}>Create Diagram</button>
+                <p className="hint">Tip: drag to rotate, scroll to zoom.</p>
+              </div>
+            </section>
           </form>
         </section>
 
@@ -463,6 +537,9 @@ function App() {
               <div className="canvasCard">
                 <div className="canvasHeader">
                   <div className="chips">
+                    <span className="chip chipProject">Model: {preview.modelNo || '—'}</span>
+                    <span className="chip chipProject">Plug: {preview.plugType || '—'}</span>
+                    <span className="chip chipProject">Cell: {preview.cellType || '—'}</span>
                     <span className="chip chipL">L: {preview.lengthMm} mm</span>
                     <span className="chip chipW">W: {preview.widthMm} mm</span>
                     <span className="chip chipH">H1: {preview.h1Mm} mm</span>
@@ -473,14 +550,20 @@ function App() {
                       Layout: {preview.rows} × {preview.columns} = {preview.rows * preview.columns} cells
                     </span>
                   </div>
-                  <button
-                    type="button"
-                    className="stdViewBtn"
-                    onClick={() => boxSceneRef.current?.resetToStandardView()}
-                    title="Reset to standard isometric view"
-                  >
-                    ⊞ Standard View
-                  </button>
+                  <div className="viewControls">
+                    <button type="button" className="stdViewBtn" onClick={() => boxSceneRef.current?.resetToStandardView()} title="Reset to standard isometric view">
+                      ⊞ Standard
+                    </button>
+                    <button type="button" className="stdViewBtn" onClick={() => boxSceneRef.current?.setView('top')} title="Top view">
+                      Top
+                    </button>
+                    <button type="button" className="stdViewBtn" onClick={() => boxSceneRef.current?.setView('front')} title="Front view">
+                      Front
+                    </button>
+                    <button type="button" className="stdViewBtn" onClick={() => boxSceneRef.current?.setView('side')} title="Side view">
+                      Side
+                    </button>
+                  </div>
                 </div>
                 <div className="canvasWrap">
                   <BoxScene
@@ -521,6 +604,11 @@ function App() {
                   </div>
                 </div>
                 <div className="pdfFooterDisclaimer">
+                  {createdAt && (
+                    <>
+                      Generated on <strong>{createdAt.toLocaleString()}</strong>.{' '}
+                    </>
+                  )}
                   For battery box design inquiries contact{' '}
                   <strong>mohammad.shaadab@dahbashi.com</strong>{' '}
                   or <strong>service.mrpjed@dahbashi.com</strong>

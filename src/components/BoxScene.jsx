@@ -16,6 +16,18 @@ import { forwardRef, useImperativeHandle, useMemo, useRef } from 'react'
 
 // Unit direction for standard view: front-right, slightly elevated
 const STANDARD_DIR = new THREE.Vector3(2.8, 1.8, 3.0).normalize()
+const TOP_DIR      = new THREE.Vector3(0.01, 1, 0.01).normalize()
+const FRONT_DIR    = new THREE.Vector3(0, 0.18, 1).normalize()
+const SIDE_DIR     = new THREE.Vector3(1, 0.18, 0).normalize()
+
+function applyCameraDirection(camera, controls, bounds, direction) {
+  const target = controls ? controls.target.clone() : new THREE.Vector3()
+  const dist   = camera.position.distanceTo(target)
+  camera.position.copy(direction.clone().multiplyScalar(Math.max(dist, 3)))
+  camera.lookAt(target)
+  if (controls) { controls.target.copy(target); controls.update() }
+  bounds.refresh().fit()
+}
 
 function BoundsResetHelper({ helperRef }) {
   const bounds               = useBounds()
@@ -23,12 +35,20 @@ function BoundsResetHelper({ helperRef }) {
 
   useImperativeHandle(helperRef, () => ({
     resetToStandardView() {
-      const target = controls ? controls.target.clone() : new THREE.Vector3()
-      const dist   = camera.position.distanceTo(target)
-      camera.position.copy(STANDARD_DIR.clone().multiplyScalar(Math.max(dist, 3)))
-      camera.lookAt(target)
-      if (controls) { controls.target.copy(target); controls.update() }
-      bounds.refresh().fit()
+      applyCameraDirection(camera, controls, bounds, STANDARD_DIR)
+    },
+    setView(view) {
+      if (view === 'top') {
+        applyCameraDirection(camera, controls, bounds, TOP_DIR)
+        return
+      }
+      if (view === 'front') {
+        applyCameraDirection(camera, controls, bounds, FRONT_DIR)
+        return
+      }
+      if (view === 'side') {
+        applyCameraDirection(camera, controls, bounds, SIDE_DIR)
+      }
     },
   }))
 
@@ -464,6 +484,7 @@ export const BoxScene = forwardRef(function BoxScene(
 
   useImperativeHandle(ref, () => ({
     resetToStandardView() { helperRef.current?.resetToStandardView() },
+    setView(view) { helperRef.current?.setView(view) },
   }))
 
   const initCam = STANDARD_DIR.clone().multiplyScalar(6).toArray()

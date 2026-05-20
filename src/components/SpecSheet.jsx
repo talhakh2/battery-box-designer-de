@@ -26,12 +26,16 @@ export function SpecSheet({
         {/* <div className="specHint"></div> */}
       </div>
 
-      {/* ── Box dimensions ── */}
-      <div className="specSectionLabel">Box Dimensions</div>
+      <div className="specSectionLabel">Design Details</div>
       <div className="specGrid">
         <SpecItem label="Machine Model"   value={modelNo || '—'}                      accent="#4f46e5" />
         <SpecItem label="Plug Type"       value={plugType || '—'}                     accent="#1d4ed8" />
         <SpecItem label="Cell Type"  value={cellType || '—'}                     accent="#06b6d4" />
+      </div>
+
+      {/* ── Box dimensions ── */}
+      <div className="specSectionLabel" style={{ marginTop: 10 }}>Box Dimensions</div>
+      <div className="specGrid">
         <SpecItem label="Box Length" value={`${lengthMm} mm`}                              accent="#8b5cf6" />
         <SpecItem label="Box Width"  value={`${widthMm} mm`}                             accent="#f97316" />
         <SpecItem label={h2Mm !== h1Mm ? 'Box H1 (Along Length)' : 'Box Height'} value={`${h1Mm} mm`} accent="#22c55e" />
