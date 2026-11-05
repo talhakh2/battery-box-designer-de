@@ -631,7 +631,7 @@ button.waBtn:hover:not(:disabled), .waBtn:hover { background: #1ebe5b; color: #f
   color: #fff;
 }
 .rhLogo { background: #fff; border-radius: 8px; padding: 6px 10px; display: flex; align-items: center; }
-.rhLogo img { width: 104px; height: 38px; object-fit: contain; display: block; }
+.rhLogo img { width: 150px; height: 40px; display: block; }
 .rhKicker { font-size: 9px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #7dd3fc; }
 .rhTitle { font-size: 21px; font-weight: 900; letter-spacing: -0.01em; line-height: 1.15; margin-top: 2px; }
 .rhSub { font-size: 10.5px; color: #cbd5e1; margin-top: 2px; }
@@ -721,3 +721,5 @@ button.waBtn:hover:not(:disabled), .waBtn:hover { background: #1ebe5b; color: #f
 .rpDoc .rpParts.rpTotals tbody tr td,
 .rpDoc .rpParts.rpTotals tbody tr td.rpLabel { background: #0b1f3a; color: #fff; border-color: #0b1f3a; }
 .rpDoc .rpParts.rpTotals tbody tr:nth-child(n) td:nth-child(n) { background: #0b1f3a; color: #fff; border-color: #0b1f3a; }
+/* Box designer PDF header: keep the AF logo's proportions */
+.pdfLogo { width: 150px !important; height: 40px !important; object-fit: fill; }

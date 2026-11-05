@@ -9,7 +9,6 @@ import {
   RoundedBox,
   Text,
   useBounds,
-  useTexture,
 } from '@react-three/drei'
 import { Edges } from '@react-three/drei'
 import * as THREE from 'three'
@@ -334,34 +333,12 @@ function SideHoles({ w, h2, maxH, l, holeCount, holeDiameterMm }) {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   LOGO DECAL
-   ══════════════════════════════════════════════════════════════ */
-function FaceLogo({ faceW, faceH, xPos, rotY, centerY }) {
-  const texture = useTexture('/logo2.jpeg')
-  const imgW    = texture.image?.naturalWidth  || texture.image?.width  || 300
-  const imgH    = texture.image?.naturalHeight || texture.image?.height || 100
-  const aspect  = imgW / imgH
-  const logoW   = faceW * 0.50
-  const logoH   = logoW / aspect
-  // Absolute Y position: top of this wall minus inset
-  const yPos    = centerY + faceH / 2 - logoH / 2 - faceH * 0.04
-
-  return (
-    <mesh position={[xPos, yPos, 0]} rotation={[0, rotY, 0]} renderOrder={10}>
-      <planeGeometry args={[logoW, logoH]} />
-      <meshBasicMaterial map={texture} transparent depthTest={false} toneMapped={false} />
-    </mesh>
-  )
-}
-
-/* ══════════════════════════════════════════════════════════════
    BOX SHELL  — long walls at h1, short walls at h2, both
    share the same bottom at y = -maxH/2
    ══════════════════════════════════════════════════════════════ */
 function BlackBox({ w, h1, h2, maxH, l, color, holeCount, holeDiameterMm }) {
   const mat   = <meshStandardMaterial color={color} roughness={0.25} metalness={0.15} side={THREE.DoubleSide} />
   const t     = 0.008
-  const off   = t / 2 + 0.002
 
   const longY  = -maxH / 2 + h1 / 2   // center Y of long walls  (x = ±w/2)
   const shortY = -maxH / 2 + h2 / 2   // center Y of short walls (z = ±l/2)
@@ -386,13 +363,11 @@ function BlackBox({ w, h1, h2, maxH, l, color, holeCount, holeDiameterMm }) {
       <mesh position={[-w / 2, longY, 0]} rotation={[0, Math.PI / 2, 0]} castShadow receiveShadow>
         <boxGeometry args={[l, h1, t]} />{mat}
       </mesh>
-      <FaceLogo faceW={l} faceH={h1} xPos={-w / 2 - off} rotY={-Math.PI / 2} centerY={longY} />
 
       {/* Right long wall (x = +w/2) */}
       <mesh position={[w / 2, longY, 0]} rotation={[0, Math.PI / 2, 0]} castShadow receiveShadow>
         <boxGeometry args={[l, h1, t]} />{mat}
       </mesh>
-      <FaceLogo faceW={l} faceH={h1} xPos={w / 2 + off} rotY={Math.PI / 2} centerY={longY} />
 
       {/* Side holes */}
       {holeCount > 0 && (

@@ -644,17 +644,11 @@ export function BoxDesigner({ addToast }) {
               <div className="pdfFooterNote">
                 <div className="pdfFooterRow">
                   <div className="pdfFooterLeft">
-                    <span className="pdfFooterBadge">Direct Energy Company</span>
-                    <span className="pdfFooterAddress">
-                      7284 Masamh Street, Al Mashael, Riyadh 14326, Saudi Arabia
-                    </span>
+                    <span className="pdfFooterBadge">Abdullah Farooq</span>
+                    <span className="pdfFooterAddress">Battery &amp; Charger Field Service</span>
                   </div>
                   <div className="pdfFooterRight">
-                    {/* <span className="pdfFooterContact">📞 +966 11 204 4884</span> */}
-                    {/* <span className="pdfFooterContact">📧 directenergy@dahbashi.com</span> */}
-                    <a className="pdfFooterUrl" href="https://directenergy.dahbashi.com">
-                      directenergy.dahbashi.com
-                    </a>
+                    <span className="pdfFooterUrl">For personal convenience only — not an authorized document</span>
                   </div>
                 </div>
                 <div className="pdfFooterDisclaimer">
@@ -663,9 +657,7 @@ export function BoxDesigner({ addToast }) {
                       Generated on <strong>{createdAt.toLocaleString()}</strong>.{' '}
                     </>
                   )}
-                  For battery box design inquiries contact{' '}
-                  <strong>mohammad.shaadab@dahbashi.com</strong>{' '}
-                  or <strong>service.mrpjed@dahbashi.com</strong>
+                  For battery box design inquiries contact <strong>Abdullah Farooq</strong>.
                 </div>
               </div>
 

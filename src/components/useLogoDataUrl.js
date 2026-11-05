@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 
 /** Logo as an inline data URL so html2canvas can draw it into the PDF. */
 export function useLogoDataUrl() {
-  const [src, setSrc] = useState('/logo.svg')
+  const [src, setSrc] = useState('/af-logo.svg')
   useEffect(() => {
-    fetch('/logo.svg')
+    fetch('/af-logo.svg')
       .then(r => r.text())
       .then(svgText => {
         const b64 = btoa(unescape(encodeURIComponent(svgText)))

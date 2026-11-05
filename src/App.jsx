@@ -108,9 +108,9 @@ function App() {
     <div className="page">
       <header className="topbar">
         <button type="button" className="brand brandHome" onClick={() => selectTab(null)} title="Home">
-          <img className="brandLogo" src="/logo.svg" alt="Direct Energy logo" />
+          <img className="brandLogo" src="/af-mark.svg" alt="Abdullah Farooq — Battery Field Service" />
           <div>
-            <div className="brandTitle">Direct Energy Battery Tools</div>
+            <div className="brandTitle">Abdullah Farooq · Battery Field Service</div>
             <div className="brandSub">Box designer · Service reports · Parts issue</div>
           </div>
         </button>

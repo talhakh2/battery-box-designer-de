@@ -222,11 +222,11 @@ export function ReportSignOff({ role, techName, verified, verifiedAt, signatureS
       <div className="pdfFooterNote">
         <div className="pdfFooterRow">
           <div className="pdfFooterLeft">
-            <span className="pdfFooterBadge">Direct Energy Company</span>
-            <span className="pdfFooterAddress">7284 Masamh Street, Al Mashael, Riyadh 14326, Saudi Arabia</span>
+            <span className="pdfFooterBadge">Abdullah Farooq</span>
+            <span className="pdfFooterAddress">Battery &amp; Charger Field Service</span>
           </div>
           <div className="pdfFooterRight">
-            <a className="pdfFooterUrl" href="https://directenergy.dahbashi.com">directenergy.dahbashi.com</a>
+            <span className="pdfFooterUrl">For personal convenience only — not an authorized document</span>
           </div>
         </div>
       </div>

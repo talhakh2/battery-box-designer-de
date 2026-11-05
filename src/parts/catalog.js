@@ -1,4 +1,4 @@
-// Parts list transcribed from the Direct Energy "PARTS ISSUE FORM" (DE-PIF).
+// Parts list transcribed from the paper "PARTS ISSUE FORM" (DE-PIF).
 // Inter-cell connectors from both columns of the paper form are merged per size;
 // parts listed in both columns with the same part number appear once.
 

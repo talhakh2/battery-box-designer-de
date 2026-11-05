@@ -9,9 +9,9 @@ export function ReportHeader({ title, subtitle, meta = [], status }) {
   return (
     <div className="rhWrap">
       <div className="rhBand">
-        <div className="rhLogo"><img src={logo} alt="Direct Energy" crossOrigin="anonymous" /></div>
+        <div className="rhLogo"><img src={logo} alt="Abdullah Farooq — Battery Field Service" crossOrigin="anonymous" /></div>
         <div className="rhTitles">
-          <div className="rhKicker">Direct Energy · Field Service</div>
+          <div className="rhKicker">Abdullah Farooq · Battery Field Service</div>
           <div className="rhTitle">{title}</div>
           {subtitle && <div className="rhSub">{subtitle}</div>}
         </div>
