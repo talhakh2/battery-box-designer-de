@@ -1,3 +1,4 @@
+import { ErrorBoundary } from './ErrorBoundary'
 import { Canvas, useThree } from '@react-three/fiber'
 import {
   Billboard,
@@ -12,7 +13,7 @@ import {
 } from '@react-three/drei'
 import { Edges } from '@react-three/drei'
 import * as THREE from 'three'
-import { forwardRef, useImperativeHandle, useMemo, useRef } from 'react'
+import { Suspense, forwardRef, useImperativeHandle, useMemo, useRef } from 'react'
 
 // Unit direction for standard view: front-right, slightly elevated
 const STANDARD_DIR = new THREE.Vector3(2.8, 1.8, 3.0).normalize()
@@ -523,7 +524,12 @@ export const BoxScene = forwardRef(function BoxScene(
       </mesh>
 
       <OrbitControls makeDefault enablePan enableRotate enableZoom dampingFactor={0.08} />
-      <Environment preset="studio" />
+      {/* Studio lighting is fetched from a CDN; if offline, keep rendering without it */}
+      <ErrorBoundary fallback={null}>
+        <Suspense fallback={null}>
+          <Environment preset="studio" />
+        </Suspense>
+      </ErrorBoundary>
     </Canvas>
   )
 })
