@@ -1,11 +1,13 @@
 import './App.css'
 import './service/ServiceReport.css'
 import './theme.css'
+import './capacity/capacity.css'
 import { useCallback, useState } from 'react'
 import { BoxDesigner } from './tabs/BoxDesigner'
 import { ServiceReport } from './tabs/ServiceReport'
 import { ChargerReport } from './tabs/ChargerReport'
 import { PartsIssue } from './tabs/PartsIssue'
+import { CapacityReport } from './tabs/CapacityReport'
 import { ToastContainer } from './components/Toast'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { PasswordDialog } from './service/PasswordDialog'
@@ -49,6 +51,12 @@ const TABS = [
     audience: 'Only for Store Incharge',
     desc: 'Tap to pick connectors, cables, material, BFS and air-mix parts with quantities, add delivery details and a photo.',
     Component: PartsIssue,
+  },
+  {
+    id: 'capacity', accent: 'teal', label: 'Capacity Test Report', short: 'Capacity Test', icon: '📊',
+    audience: 'Only for Engineers / Technicians',
+    desc: 'Rated vs tested capacity, performance gauge, backup estimate, condition assessment and repair / service / replacement recommendation.',
+    Component: CapacityReport,
   },
 ]
 
@@ -111,7 +119,7 @@ function App() {
           <img className="brandLogo" src="/af-mark.svg" alt="Battery Field Service" />
           <div>
             <div className="brandTitle">Battery Field Service</div>
-            <div className="brandSub">Box designer · Service reports · Parts issue</div>
+            <div className="brandSub">Box designer · Service reports · Parts issue · Capacity test</div>
           </div>
         </button>
         <nav className="appTabs" role="tablist" aria-label="Tools">
@@ -142,7 +150,7 @@ function App() {
             <h1>{greeting()}, <span>Field Service Team</span></h1>
             <p>Pick a tool below to design a box, inspect a battery or charger, or issue parts. Everything works on your phone at site.</p>
             <div className="homeHeroStats">
-              <div><strong>4</strong><span>Tools</span></div>
+              <div><strong>{TABS.length}</strong><span>Tools</span></div>
               <div><strong>PDF</strong><span>Reports</span></div>
               <div><strong>📱</strong><span>Mobile ready</span></div>
             </div>

@@ -187,7 +187,7 @@ export function ReportPhotos({ photos, heading }) {
 }
 
 /** PDF: inspector + verification boxes and company footer. */
-export function ReportSignOff({ role, techName, verified, verifiedAt, signatureSrc }) {
+export function ReportSignOff({ role, techName, verified, verifiedAt, signatureSrc, designation, dateText }) {
   const inspector = role === 'engineer' ? ENGINEER_NAME : (techName || '').trim()
   const inspectorRole = role === 'engineer' ? 'Engineer' : 'Technician'
   return (
@@ -196,7 +196,7 @@ export function ReportSignOff({ role, techName, verified, verifiedAt, signatureS
         <div className="rpSignBox">
           <div className="rpSignLabel">{inspectorRole}&apos;s Name &amp; Signature</div>
           <div className="rpSignName">{inspector || ' '}</div>
-          <div className="rpSignRole">{inspector ? inspectorRole : ''}</div>
+          <div className="rpSignRole">{inspector ? (designation || inspectorRole) : ''}{dateText ? ` · ${dateText}` : ''}</div>
           <div className="rpSignLine" />
           <div className="rpSignHint">Signature</div>
         </div>

@@ -723,3 +723,4 @@ button.waBtn:hover:not(:disabled), .waBtn:hover { background: #1ebe5b; color: #f
 .rpDoc .rpParts.rpTotals tbody tr:nth-child(n) td:nth-child(n) { background: #0b1f3a; color: #fff; border-color: #0b1f3a; }
 /* Box designer PDF header: keep the AF logo's proportions */
 .pdfLogo { width: 150px !important; height: 40px !important; object-fit: fill; }
+.rh-bad { background: #ef4444; color: #fff; }

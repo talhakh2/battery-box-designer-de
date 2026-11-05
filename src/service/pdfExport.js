@@ -35,6 +35,7 @@ export async function exportReportPdf(root, filename, { footerLeft = '' } = {}) 
         doc.querySelectorAll('[data-pdf-offscreen]').forEach(el => { el.style.left = '0px' })
       },
     })
+    if (block.hasAttribute('data-pdf-newpage') && y > margin) { pdf.addPage(); y = margin }
     const isPhoto = block.hasAttribute('data-pdf-photo')
     const h = (canvas.height * usableW) / canvas.width
     const pageUsable = bottom - margin

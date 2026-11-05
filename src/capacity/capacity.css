@@ -1,0 +1,120 @@
+/* ═════════ Capacity Test Report ═════════ */
+.accent-teal { --acc: #0d9488; --acc-grad: linear-gradient(135deg, #2dd4bf, #0f766e); --acc-soft: rgba(45,212,191,0.14); --acc-shadow: rgba(13,148,136,0.25); }
+
+/* five tools: fit the home grid and the top tab bar */
+.homeGrid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+@media (max-width: 1480px) {
+  .appTabLong { display: none; }
+  .appTabShort { display: inline; }
+}
+.appTabs { flex-wrap: wrap; }
+
+.cpSeg { flex-wrap: wrap; }
+.cpSeg .segmentedOption { padding: 9px 12px; }
+
+.cpHintBox { align-self: end; font-size: 12px; color: var(--tok-text-2, #526070); background: #f0f9ff; border: 1px dashed #7dd3fc; border-radius: 8px; padding: 8px 10px; }
+
+/* dashboard + PDF shared */
+.cpOverview { display: grid; grid-template-columns: 0.9fr 1.3fr; gap: 12px; align-items: center; }
+.cpGaugeBox, .cpBarsBox { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+.cpGauge { width: 100%; max-width: 290px; height: auto; display: block; }
+.cpBars { width: 100%; height: auto; display: block; }
+.cpBoxTitle { align-self: flex-start; font-size: 10px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; color: #64748b; margin-bottom: 4px; }
+.cpKpis { margin-top: 10px; grid-template-columns: repeat(5, 1fr); }
+
+.cpStatus { margin-top: 10px; display: flex; gap: 10px; align-items: flex-start; border: 1.5px solid; border-radius: 10px; padding: 10px 12px; }
+.cpStatusDot { width: 14px; height: 14px; border-radius: 999px; margin-top: 2px; flex: 0 0 14px; }
+.cpStatusTitle { font-size: 14px; font-weight: 900; }
+.cpStatusText { font-size: 11px; color: #475569; margin-top: 2px; line-height: 1.5; }
+
+.cpBackup { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.cpBackupUi { margin-top: 10px; }
+.cpBackupCard { border-radius: 10px; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 2px; }
+.cpBackupCard span { font-size: 9.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; }
+.cpBackupCard strong { font-size: 20px; font-weight: 900; color: #0b1f3a; font-variant-numeric: tabular-nums; }
+.cpBackupCard em { font-style: normal; font-size: 10.5px; color: #64748b; line-height: 1.4; }
+.cpBackupCard.cpMain { background: linear-gradient(135deg, #0369a1, #0b1f3a); border-color: #0b1f3a; }
+.cpBackupCard.cpMain span, .cpBackupCard.cpMain em { color: #bae6fd; }
+.cpBackupCard.cpMain strong { color: #fff; }
+.cpBackupCard.cpPractical { background: linear-gradient(135deg, #0d9488, #115e59); border-color: #115e59; }
+.cpBackupCard.cpPractical span, .cpBackupCard.cpPractical em { color: #ccfbf1; }
+.cpBackupCard.cpPractical strong { color: #fff; }
+.cpBackupCard.cpMuted { grid-column: span 2; background: #fff7ed; border-color: #fed7aa; }
+.cpBackupCard.cpMuted em { color: #9a3412; font-weight: 700; }
+.cpNote { margin-top: 8px; font-size: 10.5px; color: #475569; background: #f8fafc; border-left: 3px solid #94a3b8; padding: 7px 10px; border-radius: 4px; line-height: 1.5; }
+
+/* thresholds */
+.cpThresh { margin-top: 14px; border-top: 1px solid var(--tok-border, rgba(0,0,0,0.07)); padding-top: 12px; }
+.cpThreshHead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.cpThreshHead > span { font-size: 12px; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tok-text-2, #526070); }
+.cpThreshBtns { display: flex; gap: 6px; }
+.cpThreshHead button { padding: 6px 12px; font-size: 12px; }
+.cpThreshRow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.cpThreshItem { border-left: 4px solid; border-radius: 6px; background: #f8fafc; padding: 6px 8px; display: flex; flex-direction: column; font-size: 12px; }
+.cpThreshItem input { width: 48px; padding: 3px 4px; font-size: 12px; text-align: center; border-radius: 4px; display: inline-block; }
+
+/* condition */
+.cpCond { display: flex; flex-direction: column; gap: 12px; }
+.cpCondLabel { font-size: 12px; font-weight: 800; color: var(--tok-text-2, #526070); margin-bottom: 6px; }
+.cpCondRow .field { margin-top: 8px; max-width: 260px; }
+.cpAge { font-size: 12.5px; padding: 8px 10px; border-radius: 8px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+.cpAge.warn { background: #fff7ed; border-color: #fed7aa; color: #9a3412; font-weight: 700; }
+
+/* recommendation */
+.cpHint { display: flex; gap: 12px; align-items: center; justify-content: space-between; border: 1.5px dashed; border-radius: 10px; padding: 12px 14px; background: #fafcff; margin-bottom: 12px; }
+.cpHintTitle { font-size: 14px; }
+.cpHintText { font-size: 12.5px; color: var(--tok-text-2, #526070); margin-top: 3px; }
+.cpHintMuted { font-style: italic; color: var(--tok-text-3, #8a9bb0); }
+.cpRecOptions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+button.cpRecOpt {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; padding: 14px;
+  background: #fff; color: var(--tok-text, #0e1825); border: 2px solid var(--tok-border-md, #ddd); border-radius: 12px; box-shadow: none;
+}
+button.cpRecOpt:hover:not(:disabled) { background: #fff; color: var(--tok-text, #0e1825); border-color: var(--rc); transform: none; box-shadow: none; }
+button.cpRecOpt.on, button.cpRecOpt.on:hover:not(:disabled) { background: var(--rc); border-color: var(--rc); color: #fff; }
+.cpRecNo { font-size: 10.5px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.75; }
+button.cpRecOpt strong { font-size: 15px; line-height: 1.25; }
+.cpRecBody { display: flex; flex-direction: column; gap: 10px; }
+.cpChecks { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+.cpCheck { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: #fff; border: 1.5px solid var(--tok-border-md, #ddd); cursor: pointer; font-size: 14px; font-weight: 600; }
+.cpCheck input { width: 18px; height: 18px; accent-color: var(--rc); }
+.cpCheck.on { border-color: var(--rc); background: #fff; box-shadow: inset 4px 0 0 var(--rc); }
+textarea.cpStatement { font-weight: 900; font-size: 15px; border-width: 2px; }
+
+/* sidebar */
+.cpSideGauge { width: 100%; max-width: 250px; display: block; margin: 0 auto 6px; }
+.cpSideRec { margin-top: 8px; color: #fff; font-weight: 900; text-align: center; padding: 8px; border-radius: 8px; font-size: 13px; }
+
+/* PDF-only pieces */
+.cpDoc .cpRec { border: 2px solid; border-radius: 10px; overflow: hidden; }
+.cpRecHead { color: #fff; font-weight: 900; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 12px; }
+.cpRecList { margin: 0; padding: 8px 12px; list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 5px 14px; }
+.cpRecList li { font-size: 11.5px; display: flex; gap: 6px; }
+.cpRecList li span { font-weight: 900; }
+.cpMutedText { color: #94a3b8; font-size: 11.5px; }
+.cpFinal { border: 2px solid; border-radius: 10px; padding: 12px 14px; background: #fff; display: flex; flex-direction: column; gap: 4px; }
+.cpFinal span { font-size: 9.5px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; color: #64748b; }
+.cpFinal strong { font-size: 15px; font-weight: 900; line-height: 1.35; white-space: pre-wrap; }
+.cpDoc .cpGaugeBox, .cpDoc .cpBarsBox { padding: 8px; }
+
+@media (max-width: 760px) {
+  .cpOverview { grid-template-columns: 1fr; }
+  .cpKpis { grid-template-columns: repeat(2, 1fr); }
+  .cpBackup { grid-template-columns: 1fr; }
+  .cpBackupCard.cpMuted { grid-column: auto; }
+  .cpThreshRow { grid-template-columns: repeat(2, 1fr); }
+  .cpRecOptions { grid-template-columns: 1fr; }
+  .cpHint { flex-direction: column; align-items: stretch; }
+}
+/* PDF copy is always rendered at A4 width, keep desktop layout there */
+.cpDoc .cpOverview { grid-template-columns: 0.9fr 1.3fr; }
+.cpDoc .cpKpis { grid-template-columns: repeat(5, 1fr); }
+.cpDoc .cpBackup { grid-template-columns: repeat(3, 1fr); }
+.cpDoc .cpBackupCard.cpMuted { grid-column: span 2; }
+@media (max-width: 980px) { .cpLayout .cpSide { display: none; } }
+/* phones: five tabs in one row */
+@media (max-width: 640px) {
+  .appTabs { display: grid; grid-template-columns: repeat(5, 1fr); flex-wrap: nowrap; gap: 3px; padding: 3px; }
+  button.appTab { padding: 7px 2px; font-size: 10.5px; line-height: 1.2; flex-direction: column; gap: 1px; }
+  .appTabLock { font-size: 9px; margin: 0; }
+}
