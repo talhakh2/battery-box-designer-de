@@ -4,7 +4,7 @@ import { ChargerDocument } from '../service/ChargerDocument'
 import { PasswordDialog } from '../service/PasswordDialog'
 import { exportReportPdf } from '../service/pdfExport'
 import { ENGINEER_NAME, todayIso } from '../service/readings'
-import { Field, PhotosPanel, ScaledPreview, SignOffPanel } from '../service/shared'
+import { Field, PhotosPanel, PreviewSection, SignOffPanel } from '../service/shared'
 import { useSignOff } from '../service/useSignOff'
 
 const DRAFT_KEY = 'de_charger_report_draft_v1'
@@ -184,23 +184,23 @@ export function ChargerReport({ addToast }) {
             onToggleVerify={toggleVerify}
           />
 
-          <section className="panel srOrder6">
-            <h2 className="panelTitle">Report Preview</h2>
-            <ScaledPreview>
-              <div ref={reportRef}>
-                <ChargerDocument
-                  form={form}
-                  photos={photos}
-                  role={role}
-                  techName={techName}
-                  verified={verified}
-                  verifiedAt={verifiedAt}
-                  signatureSrc={signature}
-                />
-              </div>
-            </ScaledPreview>
-            <div className="srPreviewActions">{downloadBtn}</div>
-          </section>
+          <PreviewSection
+            className="srOrder6"
+            title="Report Preview"
+            reportRef={reportRef}
+            downloadBtn={downloadBtn}
+            document={(
+            <ChargerDocument
+              form={form}
+              photos={photos}
+              role={role}
+              techName={techName}
+              verified={verified}
+              verifiedAt={verifiedAt}
+              signatureSrc={signature}
+            />
+            )}
+          />
         </div>
 
         <aside className="srSide">

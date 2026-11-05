@@ -6,7 +6,7 @@ import { exportReportPdf } from '../service/pdfExport'
 import {
   ENGINEER_NAME, MAX_CELLS, abnormalReason, autoFill, computeStats, makeCells, todayIso,
 } from '../service/readings'
-import { Field, PhotosPanel, ScaledPreview, SignOffPanel } from '../service/shared'
+import { Field, PhotosPanel, PreviewSection, SignOffPanel } from '../service/shared'
 import { useSignOff } from '../service/useSignOff'
 
 const DRAFT_KEY = 'de_service_report_draft_v1'
@@ -317,26 +317,26 @@ export function ServiceReport({ addToast }) {
           />
 
           {/* ── Preview ── */}
-          <section className="panel srOrder6">
-            <h2 className="panelTitle">Report Preview</h2>
-            <ScaledPreview>
-              <div ref={reportRef}>
-                <ReportDocument
-                  form={form}
-                  cells={cells}
-                  cellCount={n}
-                  stats={stats}
-                  photos={photos}
-                  role={role}
-                  techName={techName}
-                  verified={verified}
-                  verifiedAt={verifiedAt}
-                  signatureSrc={signature}
-                />
-              </div>
-            </ScaledPreview>
-            <div className="srPreviewActions">{downloadBtn}</div>
-          </section>
+          <PreviewSection
+            className="srOrder6"
+            title="Report Preview"
+            reportRef={reportRef}
+            downloadBtn={downloadBtn}
+            document={(
+            <ReportDocument
+              form={form}
+              cells={cells}
+              cellCount={n}
+              stats={stats}
+              photos={photos}
+              role={role}
+              techName={techName}
+              verified={verified}
+              verifiedAt={verifiedAt}
+              signatureSrc={signature}
+            />
+            )}
+          />
         </div>
 
         {/* ── Sidebar ── */}

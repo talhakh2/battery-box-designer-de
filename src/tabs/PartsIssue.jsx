@@ -2,9 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Spinner } from '../components/Spinner'
 import { CATEGORIES, PARTS, PARTS_BY_ID } from '../parts/catalog'
 import { PartsDocument } from '../parts/PartsDocument'
+import { WhatsAppDialog } from '../parts/WhatsAppDialog'
 import { exportReportPdf } from '../service/pdfExport'
 import { todayIso } from '../service/readings'
-import { Field, PhotosPanel, ScaledPreview } from '../service/shared'
+import { Field, PhotosPanel, PreviewSection } from '../service/shared'
 
 const DRAFT_KEY = 'de_parts_issue_draft_v1'
 
@@ -60,6 +61,7 @@ export function PartsIssue({ addToast }) {
   const [size, setSize] = useState('all')
   const [search, setSearch] = useState('')
   const [isExporting, setIsExporting] = useState(false)
+  const [sharePdf, setSharePdf] = useState(null) // { blob, filename } after download
   const reportRef = useRef(null)
   const selectedRef = useRef(null)
 
@@ -152,10 +154,10 @@ export function PartsIssue({ addToast }) {
     setIsExporting(true)
     await new Promise(r => setTimeout(r, 60))
     try {
-      await exportReportPdf(reportRef.current, filename, {
+      const out = await exportReportPdf(reportRef.current, filename, {
         footerLeft: `Parts Issue Form${form.docRef ? ` · DE-PIF-REF ${form.docRef}` : ''}`,
       })
-      addToast(`PDF downloaded: ${filename}`, 'success', 4000)
+      setSharePdf(out)
     } catch (err) {
       console.error(err)
       addToast('Failed to generate PDF', 'error', 4000)
@@ -342,15 +344,15 @@ export function PartsIssue({ addToast }) {
             </div>
           </section>
 
-          <section className="panel ptO6">
-            <h2 className="panelTitle">Form Preview</h2>
-            <ScaledPreview>
-              <div ref={reportRef}>
-                <PartsDocument form={form} groups={reportGroups} totalLines={totalLines} totalQty={totalQty} photos={photos} />
-              </div>
-            </ScaledPreview>
-            <div className="srPreviewActions">{downloadBtn}</div>
-          </section>
+          <PreviewSection
+            className="ptO6"
+            title="Form Preview"
+            reportRef={reportRef}
+            downloadBtn={downloadBtn}
+            document={(
+            <PartsDocument form={form} groups={reportGroups} totalLines={totalLines} totalQty={totalQty} photos={photos} />
+            )}
+          />
         </div>
 
         {/* ── Selected parts sidebar ── */}
@@ -392,6 +394,14 @@ export function PartsIssue({ addToast }) {
           <section className="panel srSideActions">{downloadBtn}</section>
         </aside>
       </main>
+
+      {sharePdf && (
+        <WhatsAppDialog
+          file={sharePdf}
+          shareText={`Parts Issue Form${form.docRef ? ` ${form.docRef}` : ''}${form.customer ? ` — ${form.customer}` : ''}`}
+          onClose={() => setSharePdf(null)}
+        />
+      )}
 
       {/* Mobile: always-visible count + jump to the selected list */}
       <div className="ptMobileBar">

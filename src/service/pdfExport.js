@@ -29,6 +29,8 @@ export async function exportReportPdf(root, filename, { footerLeft = '' } = {}) 
       onclone: (doc) => {
         // On-screen preview is scaled down to fit; render the clone at full size.
         doc.querySelectorAll('[data-pdf-scaler]').forEach(el => { el.style.transform = 'none' })
+        // The PDF copy lives off-screen; bring it into view in the clone so it renders.
+        doc.querySelectorAll('[data-pdf-offscreen]').forEach(el => { el.style.left = '0px' })
       },
     })
     const isPhoto = block.hasAttribute('data-pdf-photo')
@@ -69,5 +71,7 @@ export async function exportReportPdf(root, filename, { footerLeft = '' } = {}) 
     pdf.text(`Page ${i} of ${total}`, pageW - margin, pageH - margin + 4, { align: 'right' })
   }
 
+  const blob = pdf.output('blob')
   pdf.save(filename)
+  return { blob, filename }
 }

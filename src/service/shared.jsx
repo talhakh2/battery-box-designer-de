@@ -233,3 +233,41 @@ export function ReportSignOff({ role, techName, verified, verifiedAt, signatureS
     </div>
   )
 }
+
+/**
+ * Report preview on demand. The document is always rendered off-screen (that copy is
+ * what the PDF is made from); the visible preview opens in a dialog only when asked.
+ */
+export function PreviewSection({ title = 'Report Preview', reportRef, document, downloadBtn, className = '' }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <section className={`panel ${className}`}>
+      <h2 className="panelTitle">{title}</h2>
+      <div className="srPreviewCta">
+        <button type="button" className="secondary" onClick={() => setOpen(true)}>👁 Preview Report</button>
+        {downloadBtn}
+      </div>
+
+      <div className="srOffscreen" data-pdf-offscreen aria-hidden="true">
+        <div ref={reportRef}>{document}</div>
+      </div>
+
+      {open && (
+        <div className="srModalBackdrop srPreviewModal" role="dialog" aria-modal="true" aria-label={title} onMouseDown={(e) => { if (e.target === e.currentTarget) setOpen(false) }}>
+          <div className="srPreviewSheet">
+            <div className="srPreviewHead">
+              <strong>{title}</strong>
+              <div className="srPreviewHeadActions">
+                {downloadBtn}
+                <button type="button" className="secondary" onClick={() => setOpen(false)}>Close</button>
+              </div>
+            </div>
+            <div className="srPreviewBody">
+              <ScaledPreview>{document}</ScaledPreview>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  )
+}
