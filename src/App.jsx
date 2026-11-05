@@ -7,25 +7,43 @@ import { ChargerReport } from './tabs/ChargerReport'
 import { PartsIssue } from './tabs/PartsIssue'
 import { ToastContainer } from './components/Toast'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import { PasswordDialog } from './service/PasswordDialog'
+import bcrypt from 'bcryptjs'
+
+// bcrypt hash of the shared tab password (the password itself is not stored)
+const TAB_HASH = '$2b$08$uZxlF2.0Pf2z3fQPlo0AJuTmEtf/UmTlN9Cuuy7eFI4tLbMzZYVCm'
+const UNLOCK_KEY = 'de_tab_unlocked_v1'
+
+function readUnlocked() {
+  try { return JSON.parse(sessionStorage.getItem(UNLOCK_KEY) || '{}') } catch { return {} }
+}
+
+async function checkTabPassword(pw) {
+  try { return await bcrypt.compare(String(pw).trim(), TAB_HASH) } catch { return false }
+}
 
 const TABS = [
   {
     id: 'designer', label: 'Battery Box Layout Designer', short: 'Box Designer', icon: '📦',
+    audience: 'Only for Store Incharge / Engineer',
     desc: 'Enter box dimensions and cell layout, see the 3D box and export a spec sheet PDF.',
     Component: BoxDesigner,
   },
   {
     id: 'battery', label: 'Battery Service Report', short: 'Battery Report', icon: '🔋',
+    audience: 'Only for Engineers / Technicians',
     desc: 'Cell SG and voltage readings, dead cells, photos and verified PDF report.',
     Component: ServiceReport,
   },
   {
     id: 'charger', label: 'Charger Service Report', short: 'Charger Report', icon: '🔌',
+    audience: 'Only for Engineers / Technicians',
     desc: 'Charger details, customer fault, assessment, replacement recommendation and photos.',
     Component: ChargerReport,
   },
   {
     id: 'parts', label: 'Parts Issue Form', short: 'Parts Issue', icon: '🧰',
+    audience: 'Only for Store Incharge',
     desc: 'Tap to pick connectors, cables, material, BFS and air-mix parts with quantities, add delivery details and a photo.',
     Component: PartsIssue,
   },
@@ -44,6 +62,8 @@ function App() {
   const [tab, setTab] = useState(null) // nothing open after login
   const [opened, setOpened] = useState({}) // tabs mounted once visited, so switching keeps work
   const [toasts, setToasts] = useState([])
+  const [unlocked, setUnlocked] = useState(readUnlocked) // remembered until the browser tab is closed
+  const [askFor, setAskFor] = useState(null) // tab waiting for its password
 
   const addToast = useCallback((message, type = 'success', duration = 3000) => {
     const id = Date.now() + Math.random()
@@ -54,11 +74,27 @@ function App() {
     setToasts(prev => prev.filter(t => t.id !== id))
   }, [])
 
-  const selectTab = (id) => {
+  const openTab = (id) => {
     setTab(id)
     if (id) setOpened(o => ({ ...o, [id]: true }))
     window.scrollTo({ top: 0 })
   }
+
+  const selectTab = (id) => {
+    if (id && !unlocked[id]) { setAskFor(id); return }
+    openTab(id)
+  }
+
+  const onUnlock = () => {
+    const id = askFor
+    const next = { ...unlocked, [id]: true }
+    setUnlocked(next)
+    try { sessionStorage.setItem(UNLOCK_KEY, JSON.stringify(next)) } catch { /* ignore */ }
+    setAskFor(null)
+    openTab(id)
+  }
+
+  const asked = TABS.find(t => t.id === askFor)
 
   return (
     <div className="page">
@@ -80,6 +116,7 @@ function App() {
               className={`appTab${tab === t.id ? ' active' : ''}`}
               onClick={() => selectTab(t.id)}
             >
+              {!unlocked[t.id] && <span className="appTabLock" aria-label="locked">🔒</span>}
               <span className="appTabLong">{t.label}</span>
               <span className="appTabShort">{t.short}</span>
             </button>
@@ -92,6 +129,7 @@ function App() {
           {TABS.map(t => (
             <button key={t.id} type="button" className="homeCard" onClick={() => selectTab(t.id)}>
               <span className="homeIcon" aria-hidden="true">{t.icon}</span>
+              <span className={`homeAudience${unlocked[t.id] ? ' open' : ''}`}>{unlocked[t.id] ? '🔓' : '🔒'} {t.audience}</span>
               <span className="homeTitle">{t.label}</span>
               <span className="homeDesc">{t.desc}</span>
               <span className="homeGo">Open →</span>
@@ -105,6 +143,18 @@ function App() {
           <ErrorBoundary fallback={<TabError />}><t.Component addToast={addToast} /></ErrorBoundary>
         </div>
       ))}
+
+      {asked && (
+        <PasswordDialog
+          badge={asked.audience}
+          title={asked.label}
+          message="Enter the password to open this section."
+          confirmLabel="Open"
+          check={checkTabPassword}
+          onSuccess={onUnlock}
+          onCancel={() => setAskFor(null)}
+        />
+      )}
 
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>

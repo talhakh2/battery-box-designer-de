@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { unlockSignature } from './signature'
 
-export function PasswordDialog({ title, message, confirmLabel = 'Confirm', onSuccess, onCancel }) {
+// `check(password)` resolves to a truthy value when correct; defaults to unlocking the engineer signature.
+export function PasswordDialog({ title, message, badge, confirmLabel = 'Confirm', check = unlockSignature, onSuccess, onCancel }) {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -13,8 +14,8 @@ export function PasswordDialog({ title, message, confirmLabel = 'Confirm', onSuc
     setBusy(true)
     setError('')
     try {
-      const signature = await unlockSignature(password)
-      if (signature) onSuccess(signature)
+      const result = await check(password)
+      if (result) onSuccess(result)
       else { setError('Incorrect password.'); setPassword('') }
     } catch {
       setError('Could not check the password. Try again.')
@@ -27,6 +28,7 @@ export function PasswordDialog({ title, message, confirmLabel = 'Confirm', onSuc
     <div className="srModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="srPwTitle" onMouseDown={(e) => { if (e.target === e.currentTarget) onCancel() }}>
       <form className="srModal" onSubmit={submit}>
         <div className="srModalIcon" aria-hidden="true">🔒</div>
+        {badge && <div className="srModalBadge">{badge}</div>}
         <div className="srModalTitle" id="srPwTitle">{title}</div>
         {message && <div className="srModalMsg">{message}</div>}
         <div className="loginFieldWrap">
