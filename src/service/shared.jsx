@@ -222,7 +222,7 @@ export function ReportSignOff({ role, techName, verified, verifiedAt, signatureS
       <div className="pdfFooterNote">
         <div className="pdfFooterRow">
           <div className="pdfFooterLeft">
-            <span className="pdfFooterBadge">Abdullah Farooq</span>
+            <span className="pdfFooterBadge">Field Service Toolkit</span>
             <span className="pdfFooterAddress">Battery &amp; Charger Field Service</span>
           </div>
           <div className="pdfFooterRight">

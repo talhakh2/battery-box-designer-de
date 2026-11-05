@@ -48,7 +48,7 @@ export function LoginScreen({ onSuccess }) {
       <div className="loginShell">
         <section className="loginHero">
           <div className="loginBrandRow">
-            <img src="/af-logo.svg" alt="Abdullah Farooq — Battery Field Service" className="loginBrandLogo" />
+            <img src="/af-logo.svg" alt="Battery Field Service" className="loginBrandLogo" />
             <span className="loginKicker">Field Service Toolkit</span>
           </div>
           <h1 className="loginHeadline">

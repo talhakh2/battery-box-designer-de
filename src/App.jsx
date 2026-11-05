@@ -108,9 +108,9 @@ function App() {
     <div className="page">
       <header className="topbar">
         <button type="button" className="brand brandHome" onClick={() => selectTab(null)} title="Home">
-          <img className="brandLogo" src="/af-mark.svg" alt="Abdullah Farooq — Battery Field Service" />
+          <img className="brandLogo" src="/af-mark.svg" alt="Battery Field Service" />
           <div>
-            <div className="brandTitle">Abdullah Farooq · Battery Field Service</div>
+            <div className="brandTitle">Battery Field Service</div>
             <div className="brandSub">Box designer · Service reports · Parts issue</div>
           </div>
         </button>
@@ -172,11 +172,10 @@ function App() {
       ))}
 
       {tab === null && <Disclaimer />}
-      {tab !== null && (
-        <footer className="appFooterNote">
-          Reports generated from this tool are not authorized documents — for personal convenience only.
-        </footer>
-      )}
+      <footer className="appFooterNote">
+        {tab !== null && <div>Reports generated from this tool are not authorized documents — for personal convenience only.</div>}
+        <div className="accessedBy">Accessed by Engr. Abdullah Farooq</div>
+      </footer>
 
       {asked && (
         <PasswordDialog

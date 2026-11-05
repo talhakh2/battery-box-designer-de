@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
+import { ACCESSED_BY } from '../service/pdfExport'
 import { BoxScene } from '../components/BoxScene'
 import { DetailsCard } from '../components/DetailsCard'
 import { PdfHeader } from '../components/PdfHeader'
@@ -71,6 +72,9 @@ async function downloadPdfFromElement(element, filename) {
   const yOffset  = margin
 
   pdf.addImage(imgData, 'PNG', xOffset, yOffset, renderW, renderH, undefined, 'FAST')
+  pdf.setFontSize(7)
+  pdf.setTextColor(165)
+  pdf.text(ACCESSED_BY, pageWidth / 2, pageHeight - 12, { align: 'center' })
   pdf.save(filename)
 }
 
@@ -644,7 +648,7 @@ export function BoxDesigner({ addToast }) {
               <div className="pdfFooterNote">
                 <div className="pdfFooterRow">
                   <div className="pdfFooterLeft">
-                    <span className="pdfFooterBadge">Abdullah Farooq</span>
+                    <span className="pdfFooterBadge">Field Service Toolkit</span>
                     <span className="pdfFooterAddress">Battery &amp; Charger Field Service</span>
                   </div>
                   <div className="pdfFooterRight">
@@ -657,7 +661,6 @@ export function BoxDesigner({ addToast }) {
                       Generated on <strong>{createdAt.toLocaleString()}</strong>.{' '}
                     </>
                   )}
-                  For battery box design inquiries contact <strong>Abdullah Farooq</strong>.
                 </div>
               </div>
 

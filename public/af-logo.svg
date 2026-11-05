@@ -10,6 +10,6 @@
   <rect x="15.5" y="23.5" width="8" height="17" rx="2" fill="#22c55e"/>
   <rect x="25" y="23.5" width="8" height="17" rx="2" fill="#4ade80"/>
   <path d="M37 21 L31.5 32 L36 32 L33.5 42 L41.5 29 L37 29 L39.5 21 Z" fill="#facc15" stroke="#0b1f3a" stroke-width="1.1" stroke-linejoin="round"/>
-  <text x="68" y="31" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="900" fill="#0b1f3a">Abdullah Farooq</text>
-  <text x="68" y="49" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="800" fill="#0369a1" letter-spacing="2.2">BATTERY FIELD SERVICE</text>
+  <text x="68" y="31" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="900" fill="#0b1f3a">Field Service</text>
+  <text x="68" y="49" font-family="Arial, Helvetica, sans-serif" font-size="10.5" font-weight="800" fill="#0369a1" letter-spacing="1.6">BATTERY &amp; CHARGER</text>
 </svg>

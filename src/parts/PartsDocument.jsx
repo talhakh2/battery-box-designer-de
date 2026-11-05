@@ -122,7 +122,7 @@ export function PartsDocument({ form, groups, totalLines, totalQty, photos }) {
         <div className="pdfFooterNote" style={{ marginTop: 12 }}>
           <div className="pdfFooterRow">
             <div className="pdfFooterLeft">
-              <span className="pdfFooterBadge">Abdullah Farooq</span>
+              <span className="pdfFooterBadge">Field Service Toolkit</span>
               <span className="pdfFooterAddress">Battery &amp; Charger Field Service</span>
             </div>
             <div className="pdfFooterRight">

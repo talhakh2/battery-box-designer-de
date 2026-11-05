@@ -1,6 +1,8 @@
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 
+export const ACCESSED_BY = 'Accessed by Engr. Abdullah Farooq'
+
 /**
  * Export a report element as a multi-page A4 PDF.
  * Every child marked with [data-pdf-block] is rasterised on its own and placed
@@ -69,6 +71,9 @@ export async function exportReportPdf(root, filename, { footerLeft = '' } = {}) 
     pdf.setTextColor(120)
     if (footerLeft) pdf.text(footerLeft, margin, pageH - margin + 4)
     pdf.text(`Page ${i} of ${total}`, pageW - margin, pageH - margin + 4, { align: 'right' })
+    pdf.setFontSize(7)
+    pdf.setTextColor(165)
+    pdf.text(ACCESSED_BY, pageW / 2, pageH - margin + 4, { align: 'center' })
   }
 
   const blob = pdf.output('blob')
