@@ -351,3 +351,74 @@ button.srVerify.on .srVerifyBox { background: #16a34a; border-color: #16a34a; }
 @media (min-width: 981px) {
   .srSide { top: 104px; max-height: calc(100vh - 118px); }
 }
+
+/* ───────── Home screen ───────── */
+button.brandHome {
+  background: none; border: 0; box-shadow: none; padding: 0; color: inherit;
+  text-align: left; font-weight: inherit; cursor: pointer;
+}
+button.brandHome:hover:not(:disabled) { background: none; box-shadow: none; transform: none; }
+
+.homeGrid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+button.homeCard {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+  text-align: left; padding: 22px; min-height: 190px;
+  background: #fff; color: var(--tok-text, #0e1825);
+  border: 1px solid var(--tok-border-md, rgba(0,0,0,0.13)); border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(16,24,40,0.06);
+  font-weight: 400;
+}
+button.homeCard:hover:not(:disabled) {
+  background: #fff; border-color: #c94f08;
+  box-shadow: 0 10px 28px rgba(16,24,40,0.12); transform: translateY(-2px);
+}
+.homeIcon {
+  font-size: 26px; width: 48px; height: 48px; border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--tok-raised, #f7f9fb); border: 1px solid var(--tok-border, rgba(0,0,0,0.07));
+}
+.homeTitle { font-size: 16px; font-weight: 800; letter-spacing: -0.01em; }
+.homeDesc { font-size: 13px; color: var(--tok-text-2, #526070); line-height: 1.5; flex: 1; }
+.homeGo { font-size: 13px; font-weight: 800; color: #c94f08; }
+
+/* ───────── Charger report bits ───────── */
+.segmentedOption.srReplaceYes.selected { background: #dc2626; border-color: #dc2626; }
+.segmentedGroup + .field { margin-top: 10px; }
+
+.srRecBadge {
+  display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 8px; margin-bottom: 10px;
+}
+.srRecBadge span { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.75; }
+.srRecBadge strong { font-size: 17px; }
+.srRecBadge.isYes { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+.srRecBadge.isNo { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+
+.srChecklist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.srChecklist li { display: flex; gap: 8px; align-items: center; color: var(--tok-text-2, #526070); }
+.srChecklist li span { width: 18px; text-align: center; font-weight: 900; color: #94a3b8; }
+.srChecklist li.ok { color: var(--tok-text, #0e1825); }
+.srChecklist li.ok span { color: #16a34a; }
+
+.rpTall { height: 70px; vertical-align: top; }
+.rpRecommend { margin-top: 10px; border-radius: 6px; border: 2px solid; padding: 10px 12px; }
+.rpRecommend.isYes { border-color: #dc2626; background: #fef2f2; }
+.rpRecommend.isNo { border-color: #16a34a; background: #f0fdf4; }
+.rpRecommendHead { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.rpRecommendLabel { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: #334155; }
+.rpRecommendValue { font-size: 14px; font-weight: 900; }
+.rpRecommend.isYes .rpRecommendValue { color: #b91c1c; }
+.rpRecommend.isNo .rpRecommendValue { color: #15803d; }
+.rpRecommendRemarks { margin-top: 6px; font-size: 12px; white-space: pre-wrap; }
+
+@media (max-width: 980px) {
+  .homeGrid { grid-template-columns: 1fr; }
+  button.homeCard { min-height: 0; }
+}
+@media (max-width: 640px) {
+  button.appTab { padding: 8px 6px; font-size: 12px; }
+}

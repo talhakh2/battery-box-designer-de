@@ -1,16 +1,15 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Spinner } from '../components/Spinner'
 import { PasswordDialog } from '../service/PasswordDialog'
 import { ReportDocument } from '../service/ReportDocument'
 import { exportReportPdf } from '../service/pdfExport'
-import { fileToPhoto, isImageFile } from '../service/photos'
 import {
-  ENGINEER_NAME, MAX_CELLS, abnormalReason, autoFill, computeStats, fmtDate, makeCells, todayIso,
+  ENGINEER_NAME, MAX_CELLS, abnormalReason, autoFill, computeStats, makeCells, todayIso,
 } from '../service/readings'
+import { Field, PhotosPanel, ScaledPreview, SignOffPanel } from '../service/shared'
+import { useSignOff } from '../service/useSignOff'
 
 const DRAFT_KEY = 'de_service_report_draft_v1'
-const MAX_PHOTOS = 12
-const REPORT_W = 794 // px, ≈ A4 width at 96 dpi
 
 const EMPTY_FORM = {
   reportNo: '', date: '', customer: '', age: '',
@@ -41,53 +40,6 @@ function loadDraft() {
   }
 }
 
-function nowText() {
-  const d = new Date()
-  const t = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  const iso = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10)
-  return `${fmtDate(iso)} ${t}`
-}
-
-function Field({ label, children, wide }) {
-  return (
-    <label className={`field${wide ? ' srWide' : ''}`}>
-      <span>{label}</span>
-      {children}
-    </label>
-  )
-}
-
-function ScaledPreview({ children }) {
-  const outerRef = useRef(null)
-  const innerRef = useRef(null)
-  const [scale, setScale] = useState(1)
-  const [height, setHeight] = useState(0)
-
-  useLayoutEffect(() => {
-    const outer = outerRef.current
-    const inner = innerRef.current
-    if (!outer || !inner) return
-    const update = () => {
-      const s = Math.min(1, outer.clientWidth / REPORT_W)
-      setScale(s)
-      setHeight(inner.offsetHeight * s)
-    }
-    update()
-    const ro = new ResizeObserver(update)
-    ro.observe(outer)
-    ro.observe(inner)
-    return () => ro.disconnect()
-  }, [])
-
-  return (
-    <div className="srPreviewOuter" ref={outerRef} style={{ height: height || undefined }}>
-      <div className="srPreviewInner" data-pdf-scaler ref={innerRef} style={{ width: REPORT_W, transform: `scale(${scale})` }}>
-        {children}
-      </div>
-    </div>
-  )
-}
-
 export function ServiceReport({ addToast }) {
   const draft = useMemo(loadDraft, [])
   const [form, setForm] = useState(() => draft?.form ?? { ...EMPTY_FORM, date: todayIso() })
@@ -95,19 +47,13 @@ export function ServiceReport({ addToast }) {
   const [cells, setCells] = useState(() => draft?.cells ?? makeCells())
   const [techName, setTechName] = useState(() => draft?.techName ?? '')
   const [fill, setFill] = useState(() => draft?.fill ?? DEFAULT_FILL)
-  const [role, setRole] = useState('technician')
-  const [verified, setVerified] = useState(false)
-  const [verifiedAt, setVerifiedAt] = useState('')
-  const [signature, setSignature] = useState(null)
   const [photos, setPhotos] = useState([])
-  const [pwPrompt, setPwPrompt] = useState(null) // 'engineer' | 'verify' | null
   const [isExporting, setIsExporting] = useState(false)
-  const [photoBusy, setPhotoBusy] = useState(false)
 
   const reportRef = useRef(null)
-  const cameraRef = useRef(null)
-  const browseRef = useRef(null)
   const techNameRef = useRef(null)
+  const so = useSignOff({ addToast, techNameRef })
+  const { role, verified, verifiedAt, signature, pwPrompt, setPwPrompt, chooseRole, onPasswordOk, toggleVerify } = so
 
   const n = Math.min(MAX_CELLS, Math.max(1, Number.parseInt(cellCount, 10) || 1))
   const stats = useMemo(() => computeStats(cells, n), [cells, n])
@@ -132,35 +78,6 @@ export function ServiceReport({ addToast }) {
     e.preventDefault()
     const next = document.querySelector(`[data-cell-input="${kind}-${i + 1}"]`)
     if (next) { next.focus(); next.select?.() }
-  }
-
-  // ── Role / password ──
-  const chooseRole = (r) => {
-    if (r === 'engineer') {
-      if (signature) setRole('engineer')
-      else setPwPrompt('engineer')
-    } else {
-      setRole('technician')
-      window.requestAnimationFrame(() => techNameRef.current?.focus())
-    }
-  }
-
-  const onPasswordOk = (sig) => {
-    setSignature(sig)
-    if (pwPrompt === 'engineer') {
-      setRole('engineer')
-      addToast(`Engineer mode: ${ENGINEER_NAME}`, 'success')
-    } else if (pwPrompt === 'verify') {
-      setVerified(true)
-      setVerifiedAt(nowText())
-      addToast('Report verified — signature added', 'success')
-    }
-    setPwPrompt(null)
-  }
-
-  const toggleVerify = () => {
-    if (verified) { setVerified(false); setVerifiedAt(''); return }
-    setPwPrompt('verify')
   }
 
   // ── Auto-fill (engineer only) ──
@@ -190,26 +107,6 @@ export function ServiceReport({ addToast }) {
     if (!window.confirm('Clear all cell readings and dead-cell marks?')) return
     setCells(makeCells())
   }
-
-  // ── Photos ──
-  const addFiles = async (fileList) => {
-    const files = [...(fileList || [])]
-    if (!files.length) return
-    const images = files.filter(isImageFile)
-    if (images.length < files.length) addToast('Only image files can be attached', 'error', 3500)
-    const room = MAX_PHOTOS - photos.length
-    if (room <= 0) { addToast(`Maximum ${MAX_PHOTOS} photos`, 'error'); return }
-    setPhotoBusy(true)
-    const added = []
-    for (const f of images.slice(0, room)) {
-      try { added.push(await fileToPhoto(f)) } catch { addToast(`Could not read ${f.name}`, 'error') }
-    }
-    if (images.length > room) addToast(`Only ${room} more photo(s) allowed`, 'info')
-    setPhotos(p => [...p, ...added])
-    setPhotoBusy(false)
-  }
-
-  const onPick = (e) => { addFiles(e.target.files); e.target.value = '' }
 
   // ── PDF ──
   const onDownload = async () => {
@@ -242,8 +139,7 @@ export function ServiceReport({ addToast }) {
     setForm({ ...EMPTY_FORM, date: todayIso() })
     setCells(makeCells())
     setPhotos([])
-    setVerified(false)
-    setVerifiedAt('')
+    so.resetVerify()
     setFill(f => ({ ...f, from: '1', to: '' }))
   }
 
@@ -405,78 +301,20 @@ export function ServiceReport({ addToast }) {
             </div>
           </section>
 
-          {/* ── Photos ── */}
-          <section className="panel srOrder4">
-            <h2 className="panelTitle">Attached Photos</h2>
-            <div className="formSection">
-              <div className="srPhotoActions">
-                <button type="button" className="primaryBtn" onClick={() => cameraRef.current?.click()} disabled={photoBusy || photos.length >= MAX_PHOTOS}>📷 Take Photo</button>
-                <button type="button" className="secondary" onClick={() => browseRef.current?.click()} disabled={photoBusy || photos.length >= MAX_PHOTOS}>🖼 Browse Images</button>
-                {photoBusy && <Spinner size="sm" />}
-                <span className="hint">{photos.length}/{MAX_PHOTOS} · images only · shown in the PDF under "Attached Photos of Inspected Battery for reference"</span>
-              </div>
-              <input ref={cameraRef} type="file" accept="image/*" capture="environment" hidden onChange={onPick} />
-              <input ref={browseRef} type="file" accept="image/*" multiple hidden onChange={onPick} />
-              {photos.length > 0 && (
-                <div className="srPhotoGrid">
-                  {photos.map((p, i) => (
-                    <div className="srPhotoCard" key={p.id}>
-                      <div className="srPhotoThumb"><img src={p.dataUrl} alt={`Photo ${i + 1}`} /></div>
-                      <div className="srPhotoMeta">
-                        <strong>Photo {i + 1}</strong>
-                        <input
-                          value={p.caption}
-                          placeholder="Caption (optional)"
-                          onChange={(e) => setPhotos(ps => ps.map(x => (x.id === p.id ? { ...x, caption: e.target.value } : x)))}
-                        />
-                      </div>
-                      <button type="button" className="srPhotoRemove" onClick={() => setPhotos(ps => ps.filter(x => x.id !== p.id))} aria-label={`Remove photo ${i + 1}`}>×</button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </section>
+          <PhotosPanel className="srOrder4" photos={photos} setPhotos={setPhotos} addToast={addToast} />
 
-          {/* ── Sign-off ── */}
-          <section className="panel srOrder5">
-            <h2 className="panelTitle">Inspected &amp; Verified By</h2>
-            <div className="form">
-              <section className="formSection">
-                <div className="fieldGroupLabel">Inspected By</div>
-                <div className="segmentedGroup">
-                  {[
-                    { id: 'technician', label: 'Technician' },
-                    { id: 'engineer', label: 'Engineer', lock: !signature },
-                  ].map(o => (
-                    <label key={o.id} className={`segmentedOption${role === o.id ? ' selected' : ''}`}>
-                      <input type="radio" name="srRole" checked={role === o.id} onChange={() => chooseRole(o.id)} />
-                      <span className="segmentedLabel">{o.label}{o.lock ? ' 🔒' : ''}</span>
-                    </label>
-                  ))}
-                </div>
-                {isEngineer ? (
-                  <div className="srEngineerBadge">✓ {ENGINEER_NAME}</div>
-                ) : (
-                  <Field label="Technician Name">
-                    <input ref={techNameRef} value={techName} onChange={(e) => setTechName(e.target.value)} placeholder="Name shown on the report" />
-                  </Field>
-                )}
-              </section>
-
-              <section className="formSection">
-                <div className="fieldGroupLabel">Verification</div>
-                <button type="button" className={`srVerify${verified ? ' on' : ''}`} onClick={toggleVerify} aria-pressed={verified}>
-                  <span className="srVerifyBox">{verified ? '✓' : ''}</span>
-                  <span className="srVerifyText">
-                    <strong>Verified by {ENGINEER_NAME}</strong>
-                    <small>{verified ? `Verified on ${verifiedAt} — signature added to the report` : 'Password required. Adds his signature to the bottom of the report.'}</small>
-                  </span>
-                  {!verified && <span aria-hidden="true">🔒</span>}
-                </button>
-              </section>
-            </div>
-          </section>
+          <SignOffPanel
+            className="srOrder5"
+            role={role}
+            signature={signature}
+            techName={techName}
+            setTechName={setTechName}
+            techNameRef={techNameRef}
+            verified={verified}
+            verifiedAt={verifiedAt}
+            onChooseRole={chooseRole}
+            onToggleVerify={toggleVerify}
+          />
 
           {/* ── Preview ── */}
           <section className="panel srOrder6">

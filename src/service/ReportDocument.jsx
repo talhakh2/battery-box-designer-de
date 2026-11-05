@@ -1,5 +1,6 @@
 import { PdfHeader } from '../components/PdfHeader'
-import { ENGINEER_NAME, fmtDate, num } from './readings'
+import { fmtDate, num } from './readings'
+import { ReportPhotos, ReportSignOff } from './shared'
 
 function V({ children, className = '', ...rest }) {
   const empty = children === '' || children == null
@@ -20,12 +21,6 @@ function fmtSg(v) {
   return n == null ? '' : n.toFixed(3)
 }
 
-function chunk(arr, size) {
-  const out = []
-  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size))
-  return out
-}
-
 export function ReportDocument({
   form, cells, cellCount, stats, photos,
   role, techName, verified, verifiedAt, signatureSrc,
@@ -33,9 +28,6 @@ export function ReportDocument({
   const n = cellCount
   const rowsPerGroup = Math.max(1, Math.ceil(n / 4))
   const groups = [0, 1, 2, 3]
-  const inspector = role === 'engineer' ? ENGINEER_NAME : (techName || '').trim()
-  const inspectorRole = role === 'engineer' ? 'Engineer' : 'Technician'
-  const photoRows = chunk(photos, 2)
 
   return (
     <div className="rpDoc">
@@ -151,67 +143,8 @@ export function ReportDocument({
         </table>
       </div>
 
-      {/* ── Photos ── */}
-      {photoRows.map((row, ri) => (
-        <div data-pdf-block data-pdf-photo className="rpBlock" key={row[0].id}>
-          {ri === 0 && <div className="rpSectionBar">Attached Photos of Inspected Battery for reference</div>}
-          <div className="rpPhotoRow">
-            {row.map((p, pi) => (
-              <figure className="rpPhoto" key={p.id}>
-                <div className="rpPhotoFrame">
-                  <img src={p.dataUrl} alt={p.caption || `Photo ${ri * 2 + pi + 1}`} />
-                </div>
-                <figcaption>
-                  <strong>Photo {ri * 2 + pi + 1}</strong>{p.caption ? ` — ${p.caption}` : ''}
-                </figcaption>
-              </figure>
-            ))}
-            {row.length === 1 && <div className="rpPhoto rpPhotoEmpty" />}
-          </div>
-        </div>
-      ))}
-
-      {/* ── Sign-off ── */}
-      <div data-pdf-block className="rpBlock">
-        <div className="rpSign">
-          <div className="rpSignBox">
-            <div className="rpSignLabel">{inspectorRole}&apos;s Name &amp; Signature</div>
-            <div className="rpSignName">{inspector || ' '}</div>
-            <div className="rpSignRole">{inspector ? inspectorRole : ''}</div>
-            <div className="rpSignLine" />
-            <div className="rpSignHint">Signature</div>
-          </div>
-          <div className={`rpSignBox rpVerifyBox${verified ? ' isVerified' : ''}`}>
-            <div className="rpSignLabel">Verified By</div>
-            {verified ? (
-              <>
-                <div className="rpVerifiedBadge">✓ Verified</div>
-                {signatureSrc && <img className="rpSignature" src={signatureSrc} alt="Signature of Engr. Abdullah Farooq" />}
-                <div className="rpSignLine" />
-                <div className="rpSignName">{ENGINEER_NAME}</div>
-                <div className="rpSignRole">Verified on {verifiedAt}</div>
-              </>
-            ) : (
-              <>
-                <div className="rpSignName rpPending">{ENGINEER_NAME}</div>
-                <div className="rpSignRole">Pending verification</div>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="pdfFooterNote">
-          <div className="pdfFooterRow">
-            <div className="pdfFooterLeft">
-              <span className="pdfFooterBadge">Direct Energy Company</span>
-              <span className="pdfFooterAddress">7284 Masamh Street, Al Mashael, Riyadh 14326, Saudi Arabia</span>
-            </div>
-            <div className="pdfFooterRight">
-              <a className="pdfFooterUrl" href="https://directenergy.dahbashi.com">directenergy.dahbashi.com</a>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ReportPhotos photos={photos} heading="Attached Photos of Inspected Battery for reference" />
+      <ReportSignOff role={role} techName={techName} verified={verified} verifiedAt={verifiedAt} signatureSrc={signatureSrc} />
     </div>
   )
 }
