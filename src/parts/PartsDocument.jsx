@@ -30,8 +30,8 @@ export function PartsDocument({ form, groups, totalLines, totalQty, photos }) {
       <div data-pdf-block className="rpBlock">
         <ReportHeader
           title="Parts Issue Form"
-          subtitle="Document Ref ##"
-          meta={[{ label: 'DE-PIF-REF', value: form.docRef }, { label: 'W.O. Date', value: fmtDate(form.woDate) }]}
+          subtitle="Parts issue &amp; delivery record"
+          meta={[{ label: 'Ref. No.', value: form.docRef }, { label: 'W.O. Date', value: fmtDate(form.woDate) }]}
           status={{ label: `${totalLines} item${totalLines === 1 ? '' : 's'} · Qty ${totalQty}`, tone: 'warn' }}
         />
         <table className="rpTable rpInfo">

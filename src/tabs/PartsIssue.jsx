@@ -155,7 +155,7 @@ export function PartsIssue({ addToast }) {
     await new Promise(r => setTimeout(r, 60))
     try {
       const out = await exportReportPdf(reportRef.current, filename, {
-        footerLeft: `Parts Issue Form${form.docRef ? ` · DE-PIF-REF ${form.docRef}` : ''}`,
+        footerLeft: `Parts Issue Form${form.docRef ? ` · Ref. No. ${form.docRef}` : ''}`,
       })
       setSharePdf(out)
     } catch (err) {
@@ -208,7 +208,7 @@ export function PartsIssue({ addToast }) {
               <section className="formSection">
                 <div className="fieldGroupLabel">Work Order</div>
                 <div className="srGrid srGrid3">
-                  <Field label="DE-PIF-REF (Document Ref)"><input value={form.docRef} onChange={set('docRef')} placeholder="e.g. PIF-2026-0311" /></Field>
+                  <Field label="Ref. No. (Document Ref)"><input value={form.docRef} onChange={set('docRef')} placeholder="e.g. PIF-2026-0311" /></Field>
                   <Field label="Work Order No."><input value={form.woNo} onChange={set('woNo')} /></Field>
                   <Field label="Work Order Date"><input type="date" value={form.woDate} onChange={set('woDate')} /></Field>
                   <Field label="Customer Name" wide><input value={form.customer} onChange={set('customer')} placeholder="Customer / site name" /></Field>
