@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react'
 import { BoxDesigner } from './tabs/BoxDesigner'
 import { ServiceReport } from './tabs/ServiceReport'
 import { ChargerReport } from './tabs/ChargerReport'
+import { PartsIssue } from './tabs/PartsIssue'
 import { ToastContainer } from './components/Toast'
 import { ErrorBoundary } from './components/ErrorBoundary'
 
@@ -22,6 +23,11 @@ const TABS = [
     id: 'charger', label: 'Charger Service Report', short: 'Charger Report', icon: '🔌',
     desc: 'Charger details, customer fault, assessment, replacement recommendation and photos.',
     Component: ChargerReport,
+  },
+  {
+    id: 'parts', label: 'Parts Issue Form', short: 'Parts Issue', icon: '🧰',
+    desc: 'Tap to pick connectors, cables, material, BFS and air-mix parts with quantities, add delivery details and a photo.',
+    Component: PartsIssue,
   },
 ]
 
@@ -61,7 +67,7 @@ function App() {
           <img className="brandLogo" src="/logo.svg" alt="Direct Energy logo" />
           <div>
             <div className="brandTitle">Direct Energy Battery Tools</div>
-            <div className="brandSub">Box designer · Battery &amp; charger service reports</div>
+            <div className="brandSub">Box designer · Service reports · Parts issue</div>
           </div>
         </button>
         <nav className="appTabs" role="tablist" aria-label="Tools">
