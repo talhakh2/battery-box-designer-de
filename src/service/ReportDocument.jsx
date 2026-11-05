@@ -1,4 +1,4 @@
-import { PdfHeader } from '../components/PdfHeader'
+import { ReportHeader } from './ReportHeader'
 import { fmtDate, num } from './readings'
 import { ReportPhotos, ReportSignOff } from './shared'
 
@@ -33,7 +33,12 @@ export function ReportDocument({
     <div className="rpDoc">
       {/* ── Block 1: header + details ── */}
       <div data-pdf-block className="rpBlock">
-        <PdfHeader title="Battery Service Report" subtitle="Annexure to the main service report" />
+        <ReportHeader
+          title="Battery Service Report"
+          subtitle="Annexure to the main service report"
+          meta={[{ label: 'Report No.', value: form.reportNo }, { label: 'Date', value: fmtDate(form.date) }]}
+          status={verified ? { label: '✓ Verified', tone: 'ok' } : { label: 'Not verified', tone: 'muted' }}
+        />
         <table className="rpTable rpInfo">
           <colgroup>
             <col style={{ width: '17%' }} /><col style={{ width: '17%' }} /><col style={{ width: '10%' }} />
@@ -102,27 +107,22 @@ export function ReportDocument({
           </tbody>
         </table>
 
-        <table className="rpTable rpSummary">
-          <tbody>
-            <tr>
-              <L>Average Voltage</L><V className="rpNum">{stats.avgV != null ? `${stats.avgV.toFixed(3)} V` : ''}</V>
-              <L>Min / Max Voltage</L>
-              <V className="rpNum">
-                {stats.minV ? `${stats.minV.value.toFixed(2)} V (C${stats.minV.no}) / ${stats.maxV.value.toFixed(2)} V (C${stats.maxV.no})` : ''}
-              </V>
-            </tr>
-            <tr>
-              <L>Average SG</L><V className="rpNum">{stats.avgSg != null ? stats.avgSg.toFixed(3) : ''}</V>
-              <L>Total of Cell Voltages</L><V className="rpNum">{stats.sumV != null ? `${stats.sumV.toFixed(2)} V` : ''}</V>
-            </tr>
-            <tr>
-              <L>Dead Cells</L>
-              <V colSpan={3} className={stats.dead.length ? 'rpDeadText' : ''}>
-                {stats.dead.length ? `${stats.dead.length} — C.No. ${stats.dead.join(', ')}` : 'None'}
-              </V>
-            </tr>
-          </tbody>
-        </table>
+        <div className="rpKpis">
+          <div className="rpKpi kBlue"><span>Average Voltage</span><strong>{stats.avgV != null ? stats.avgV.toFixed(3) : '—'}<small> V</small></strong></div>
+          <div className="rpKpi kTeal"><span>Average SG</span><strong>{stats.avgSg != null ? stats.avgSg.toFixed(3) : '—'}</strong></div>
+          <div className="rpKpi kSlate">
+            <span>Min / Max Voltage</span>
+            <strong className="rpKpiSmall">
+              {stats.minV ? <>{stats.minV.value.toFixed(2)} <em>C{stats.minV.no}</em> / {stats.maxV.value.toFixed(2)} <em>C{stats.maxV.no}</em></> : '—'}
+            </strong>
+          </div>
+          <div className="rpKpi kIndigo"><span>Total of Cells</span><strong>{stats.sumV != null ? stats.sumV.toFixed(2) : '—'}<small> V</small></strong></div>
+          <div className={`rpKpi ${stats.dead.length ? 'kRed' : 'kGreen'}`}>
+            <span>Dead Cells</span>
+            <strong>{stats.dead.length || 'None'}</strong>
+            {stats.dead.length > 0 && <em className="rpKpiNote">C.No. {stats.dead.join(', ')}</em>}
+          </div>
+        </div>
         <div className="rpLegend">
           <span className="rpLegendSwatch" /> Cell marked dead by the inspector. Averages exclude dead cells.
         </div>

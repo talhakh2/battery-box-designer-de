@@ -618,3 +618,106 @@ button.waBtn:hover:not(:disabled), .waBtn:hover { background: #1ebe5b; color: #f
 .waBtn.waAlt { background: #fff; color: #128c4b; border: 1.5px solid #25d366; box-shadow: none; }
 .waBtn.waAlt:hover { background: #f0fdf4; color: #128c4b; }
 .waHint { font-size: 12.5px; line-height: 1.5; }
+
+/* ═════════ PDF template v2 ═════════ */
+.rpDoc { padding: 16px 22px; font-size: 11.5px; color: #0f172a; }
+
+/* header band */
+.rhWrap { border-radius: 10px; overflow: hidden; margin-bottom: 12px; border: 1px solid #0b1f3a; }
+.rhBand {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center;
+  padding: 14px 16px;
+  background: linear-gradient(120deg, #061428 0%, #0b1f3a 45%, #0f3b5c 75%, #0e5a63 100%);
+  color: #fff;
+}
+.rhLogo { background: #fff; border-radius: 8px; padding: 6px 10px; display: flex; align-items: center; }
+.rhLogo img { width: 104px; height: 38px; object-fit: contain; display: block; }
+.rhKicker { font-size: 9px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #7dd3fc; }
+.rhTitle { font-size: 21px; font-weight: 900; letter-spacing: -0.01em; line-height: 1.15; margin-top: 2px; }
+.rhSub { font-size: 10.5px; color: #cbd5e1; margin-top: 2px; }
+.rhMeta { display: flex; flex-direction: column; gap: 5px; align-items: stretch; min-width: 170px; }
+.rhMetaItem {
+  display: flex; justify-content: space-between; gap: 12px; align-items: baseline;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 6px; padding: 4px 8px;
+}
+.rhMetaItem span { font-size: 8.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #93c5fd; }
+.rhMetaItem strong { font-size: 11.5px; font-weight: 800; }
+.rhStatus { text-align: center; font-size: 10px; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; border-radius: 999px; padding: 4px 10px; }
+.rh-ok { background: #22c55e; color: #052e16; }
+.rh-muted { background: rgba(255,255,255,0.14); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.25); }
+.rh-warn { background: #fb923c; color: #431407; }
+.rhAccent { height: 4px; background: linear-gradient(90deg, #22c55e, #38bdf8 50%, #f97316); }
+
+/* section headings */
+.rpDoc .rpSectionBar {
+  margin: 10px 0 7px; padding: 6px 10px;
+  background: linear-gradient(90deg, #e0f2fe 0%, #f8fafc 70%, #ffffff 100%);
+  border-left: 4px solid #0369a1; border-radius: 4px;
+  color: #0b1f3a; text-align: left; font-size: 11px; letter-spacing: 0.1em;
+}
+
+/* tables */
+.rpDoc .rpTable td, .rpDoc .rpTable th { border-color: #cbd5e1; }
+.rpDoc .rpLabel { background: #f1f5f9; color: #334155; font-size: 9.5px; letter-spacing: 0.04em; }
+.rpDoc .rpVal { font-size: 11.5px; }
+.rpDoc .rpUnit { background: #f8fafc; color: #64748b; }
+
+.rpDoc .rpCells th { background: linear-gradient(180deg, #0f2a4a, #0b1f3a); }
+.rpDoc .rpCells tbody tr:nth-child(even) td.rpCval:not(.rpDead):not(.rpUnused) { background: #f8fafc; }
+.rpDoc .rpCells td.rpCno { background: #e2e8f0; color: #0f172a; }
+.rpDoc .rpCells td.rpDead { background: #dc2626; color: #fff; }
+.rpDoc .rpCells td.rpGroupStart, .rpDoc .rpCells th.rpGroupStart { border-left: 2px solid #0369a1; }
+
+/* KPI tiles */
+.rpKpis { display: grid; grid-template-columns: 1fr 1fr 1.35fr 1fr 1fr; gap: 6px; margin-top: 8px; }
+.rpKpi {
+  border-radius: 8px; padding: 7px 9px; color: #fff; display: flex; flex-direction: column; gap: 1px;
+  min-height: 52px; justify-content: center;
+}
+.rpKpi span { font-size: 8.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.85; }
+.rpKpi strong { font-size: 17px; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.rpKpi strong small { font-size: 10px; font-weight: 700; opacity: 0.85; }
+.rpKpi strong em { font-style: normal; font-size: 9px; font-weight: 700; opacity: 0.8; }
+.rpKpi .rpKpiSmall { font-size: 13px; }
+.rpKpi .rpKpiNote { font-style: normal; font-size: 9.5px; font-weight: 700; opacity: 0.95; }
+.kBlue { background: linear-gradient(135deg, #0369a1, #0b1f3a); }
+.kTeal { background: linear-gradient(135deg, #0d9488, #115e59); }
+.kSlate { background: linear-gradient(135deg, #475569, #1e293b); }
+.kIndigo { background: linear-gradient(135deg, #6366f1, #3730a3); }
+.kGreen { background: linear-gradient(135deg, #22c55e, #15803d); }
+.kRed { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+.rpDoc .rpLegend { margin-top: 6px; }
+
+/* charger recommendation */
+.rpDoc .rpRecommend { border-width: 1.5px; border-radius: 8px; padding: 9px 12px; }
+
+/* parts */
+.rpDoc .rpParts th { background: linear-gradient(180deg, #0f2a4a, #0b1f3a); }
+.rpDoc .rpParts tbody tr:not(.rpCatRow):nth-child(odd) td { background: #f8fafc; }
+.rpDoc .rpCatRow td { background: #e0f2fe; color: #0b1f3a; border-left: 3px solid #0369a1; }
+.rpDoc .rpTotals td { background: #0b1f3a; color: #fff; border-color: #0b1f3a; }
+.rpDoc .rpTotals .rpLabel { background: #0b1f3a; color: #fff; }
+
+/* photos */
+.rpDoc .rpPhoto { border-radius: 8px; border-color: #e2e8f0; box-shadow: 0 1px 2px rgba(15,23,42,0.06); }
+.rpDoc .rpPhotoFrame { height: 230px; border-radius: 6px; }
+
+/* sign-off: compact, decent signature size */
+.rpDoc .rpSign { gap: 12px; margin: 8px 0 10px; }
+.rpDoc .rpSignBox { min-height: 104px; padding: 8px 12px 8px; border-color: #cbd5e1; border-radius: 8px; background: #fff; }
+.rpDoc .rpSignLabel { top: 7px; left: 12px; font-size: 8.5px; letter-spacing: 0.08em; color: #64748b; }
+.rpDoc .rpSignName { font-size: 11.5px; }
+.rpDoc .rpSignRole { font-size: 9.5px; }
+.rpDoc .rpSignLine { margin: 4px 0 3px; border-top-color: #94a3b8; }
+.rpDoc .rpSignHint { font-size: 8.5px; }
+.rpDoc .rpVerifyBox.isVerified { border-color: #0369a1; background: linear-gradient(180deg, #f0f9ff, #ffffff 60%); }
+.rpDoc .rpVerifiedBadge { top: 6px; right: 8px; font-size: 8px; padding: 1px 6px; border-width: 1px; }
+.rpDoc .rpSignature { width: auto; max-width: 52%; max-height: 50px; margin-top: 16px; }
+
+/* footer */
+.rpDoc .pdfFooterNote { border-radius: 8px; }
+.rpDoc .pdfFooterRow { padding-top: 8px; padding-bottom: 8px; }
+.rpDoc .rpParts.rpTotals tbody tr td,
+.rpDoc .rpParts.rpTotals tbody tr td.rpLabel { background: #0b1f3a; color: #fff; border-color: #0b1f3a; }
+.rpDoc .rpParts.rpTotals tbody tr:nth-child(n) td:nth-child(n) { background: #0b1f3a; color: #fff; border-color: #0b1f3a; }

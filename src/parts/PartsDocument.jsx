@@ -1,4 +1,4 @@
-import { PdfHeader } from '../components/PdfHeader'
+import { ReportHeader } from '../service/ReportHeader'
 import { fmtDate } from '../service/readings'
 import { ReportPhotos } from '../service/shared'
 
@@ -28,7 +28,12 @@ export function PartsDocument({ form, groups, totalLines, totalQty, photos }) {
   return (
     <div className="rpDoc">
       <div data-pdf-block className="rpBlock">
-        <PdfHeader title="Parts Issue Form" subtitle={`Document Ref · DE-PIF-REF: ${form.docRef || '—'}`} />
+        <ReportHeader
+          title="Parts Issue Form"
+          subtitle="Document Ref ##"
+          meta={[{ label: 'DE-PIF-REF', value: form.docRef }, { label: 'W.O. Date', value: fmtDate(form.woDate) }]}
+          status={{ label: `${totalLines} item${totalLines === 1 ? '' : 's'} · Qty ${totalQty}`, tone: 'warn' }}
+        />
         <table className="rpTable rpInfo">
           <colgroup>
             <col style={{ width: '22%' }} /><col style={{ width: '33%' }} />

@@ -3,6 +3,7 @@ import { Spinner } from '../components/Spinner'
 import { PasswordDialog } from '../service/PasswordDialog'
 import { ReportDocument } from '../service/ReportDocument'
 import { exportReportPdf } from '../service/pdfExport'
+import { WhatsAppDialog } from '../parts/WhatsAppDialog'
 import {
   ENGINEER_NAME, MAX_CELLS, abnormalReason, autoFill, computeStats, makeCells, todayIso,
 } from '../service/readings'
@@ -49,6 +50,7 @@ export function ServiceReport({ addToast }) {
   const [fill, setFill] = useState(() => draft?.fill ?? DEFAULT_FILL)
   const [photos, setPhotos] = useState([])
   const [isExporting, setIsExporting] = useState(false)
+  const [sharePdf, setSharePdf] = useState(null) // { blob, filename } after download
 
   const reportRef = useRef(null)
   const techNameRef = useRef(null)
@@ -122,10 +124,10 @@ export function ServiceReport({ addToast }) {
     setIsExporting(true)
     await new Promise(r => setTimeout(r, 60))
     try {
-      await exportReportPdf(reportRef.current, filename, {
+      const out = await exportReportPdf(reportRef.current, filename, {
         footerLeft: `Battery Service Report${form.reportNo ? ` · ${form.reportNo}` : ''}${verified ? ' · Verified' : ''}`,
       })
-      addToast(`PDF downloaded: ${filename}`, 'success', 4000)
+      setSharePdf(out)
     } catch (err) {
       console.error(err)
       addToast('Failed to generate PDF', 'error', 4000)
@@ -415,6 +417,14 @@ export function ServiceReport({ addToast }) {
           </section>
         </aside>
       </main>
+
+      {sharePdf && (
+        <WhatsAppDialog
+          file={sharePdf}
+          shareText={`Battery Service Report${form.reportNo ? ` ${form.reportNo}` : ''}${form.customer ? ` — ${form.customer}` : ''}`}
+          onClose={() => setSharePdf(null)}
+        />
+      )}
 
       {pwPrompt && (
         <PasswordDialog

@@ -1,4 +1,4 @@
-import { PdfHeader } from '../components/PdfHeader'
+import { ReportHeader } from './ReportHeader'
 import { fmtDate } from './readings'
 import { ReportPhotos, ReportSignOff } from './shared'
 
@@ -16,7 +16,12 @@ export function ChargerDocument({ form, photos, role, techName, verified, verifi
   return (
     <div className="rpDoc">
       <div data-pdf-block className="rpBlock">
-        <PdfHeader title="Charger Service Report" subtitle="Annexure to the main service report" />
+        <ReportHeader
+          title="Charger Service Report"
+          subtitle="Annexure to the main service report"
+          meta={[{ label: 'Report No.', value: form.reportNo }, { label: 'Date', value: fmtDate(form.date) }]}
+          status={verified ? { label: '✓ Verified', tone: 'ok' } : { label: 'Not verified', tone: 'muted' }}
+        />
         <table className="rpTable rpInfo">
           <colgroup>
             <col style={{ width: '20%' }} /><col style={{ width: '30%' }} />
