@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import bcrypt from 'bcryptjs'
+import { BatteryHero } from './BatteryHero'
+import { Disclaimer } from './Disclaimer'
 
 // bcrypt hash of the access password (password itself is never stored)
 const PASSWORD_HASH = '$2b$12$MkMGf7qz.h9UXf7/ldBHWeSwbPkvq.DfOzFgdoCBDXJ4gQKxkZvQq'
@@ -38,50 +40,65 @@ export function LoginScreen({ onSuccess }) {
   }
 
   return (
-    <div className="loginOverlay">
-      <div className="loginCard">
+    <div className="loginOverlay themeBg">
+      <div className="themeOrb themeOrb1" aria-hidden="true" />
+      <div className="themeOrb themeOrb2" aria-hidden="true" />
+      <div className="themeGrid" aria-hidden="true" />
 
-        {/* Welcome */}
-        <div className="loginWelcome">
-          <div className="loginGreeting">Welcome back,</div>
-          <div className="loginName">{DISPLAY_NAME}</div>
-          <div className="loginHint">Enter your password to access the Battery Box Designer.</div>
-        </div>
+      <div className="loginShell">
+        <section className="loginHero">
+          <div className="loginBrandRow">
+            <img src="/logo.svg" alt="Direct Energy" className="loginBrandLogo" />
+            <span className="loginKicker">Field Service Toolkit</span>
+          </div>
+          <h1 className="loginHeadline">
+            Battery &amp; Charger<br /><span>Field Service</span>, made simple.
+          </h1>
+          <p className="loginLead">Design battery boxes, record cell readings, report charger faults and issue parts — right from site, on your phone.</p>
+          <div className="loginArt"><BatteryHero /></div>
+          <div className="loginChips">
+            <span>📦 Box Designer</span><span>🔋 Battery Report</span><span>🔌 Charger Report</span><span>🧰 Parts Issue</span>
+          </div>
+        </section>
 
-        {/* Form */}
-        <form className="loginForm" onSubmit={handleSubmit}>
-          <div className="loginFieldWrap">
-            <input
-              className={`loginInput${error ? ' loginInputError' : ''}`}
-              type={showPw ? 'text' : 'password'}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); setError('') }}
-              autoFocus
-              autoComplete="current-password"
-            />
-            <button
-              type="button"
-              className="loginTogglePw"
-              onClick={() => setShowPw(v => !v)}
-              tabIndex={-1}
-              aria-label={showPw ? 'Hide password' : 'Show password'}
-            >
-              {showPw ? '🙈' : '👁'}
-            </button>
+        <div className="loginCard">
+          <div className="loginWelcome">
+            <div className="loginGreeting">Welcome back,</div>
+            <div className="loginName">{DISPLAY_NAME}</div>
+            <div className="loginHint">Enter your password to open the Field Service Toolkit.</div>
           </div>
 
-          {error && <div className="loginError">{error}</div>}
+          <form className="loginForm" onSubmit={handleSubmit}>
+            <div className="loginFieldWrap">
+              <input
+                className={`loginInput${error ? ' loginInputError' : ''}`}
+                type={showPw ? 'text' : 'password'}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setError('') }}
+                autoFocus
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                className="loginTogglePw"
+                onClick={() => setShowPw(v => !v)}
+                tabIndex={-1}
+                aria-label={showPw ? 'Hide password' : 'Show password'}
+              >
+                {showPw ? '🙈' : '👁'}
+              </button>
+            </div>
 
-          <button
-            type="submit"
-            className="loginBtn"
-            disabled={loading}
-          >
-            {loading ? 'Verifying…' : 'Access Application'}
-          </button>
-        </form>
+            {error && <div className="loginError">{error}</div>}
 
+            <button type="submit" className="loginBtn" disabled={loading}>
+              {loading ? 'Verifying…' : 'Access Application'}
+            </button>
+          </form>
+
+          <Disclaimer compact />
+        </div>
       </div>
     </div>
   )

@@ -1,5 +1,6 @@
 import './App.css'
 import './service/ServiceReport.css'
+import './theme.css'
 import { useCallback, useState } from 'react'
 import { BoxDesigner } from './tabs/BoxDesigner'
 import { ServiceReport } from './tabs/ServiceReport'
@@ -8,6 +9,8 @@ import { PartsIssue } from './tabs/PartsIssue'
 import { ToastContainer } from './components/Toast'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { PasswordDialog } from './service/PasswordDialog'
+import { BatteryHero } from './components/BatteryHero'
+import { Disclaimer } from './components/Disclaimer'
 import bcrypt from 'bcryptjs'
 
 // bcrypt hash of the shared tab password (the password itself is not stored)
@@ -24,25 +27,25 @@ async function checkTabPassword(pw) {
 
 const TABS = [
   {
-    id: 'designer', label: 'Battery Box Layout Designer', short: 'Box Designer', icon: '📦',
+    id: 'designer', accent: 'orange', label: 'Battery Box Layout Designer', short: 'Box Designer', icon: '📦',
     audience: 'Only for Store Incharge / Engineer',
     desc: 'Enter box dimensions and cell layout, see the 3D box and export a spec sheet PDF.',
     Component: BoxDesigner,
   },
   {
-    id: 'battery', label: 'Battery Service Report', short: 'Battery Report', icon: '🔋',
+    id: 'battery', accent: 'green', label: 'Battery Service Report', short: 'Battery Report', icon: '🔋',
     audience: 'Only for Engineers / Technicians',
     desc: 'Cell SG and voltage readings, dead cells, photos and verified PDF report.',
     Component: ServiceReport,
   },
   {
-    id: 'charger', label: 'Charger Service Report', short: 'Charger Report', icon: '🔌',
+    id: 'charger', accent: 'blue', label: 'Charger Service Report', short: 'Charger Report', icon: '🔌',
     audience: 'Only for Engineers / Technicians',
     desc: 'Charger details, customer fault, assessment, replacement recommendation and photos.',
     Component: ChargerReport,
   },
   {
-    id: 'parts', label: 'Parts Issue Form', short: 'Parts Issue', icon: '🧰',
+    id: 'parts', accent: 'purple', label: 'Parts Issue Form', short: 'Parts Issue', icon: '🧰',
     audience: 'Only for Store Incharge',
     desc: 'Tap to pick connectors, cables, material, BFS and air-mix parts with quantities, add delivery details and a photo.',
     Component: PartsIssue,
@@ -56,6 +59,11 @@ function TabError() {
       <div className="hint">Reload the page to try again. The other tabs still work.</div>
     </div>
   )
+}
+
+function greeting() {
+  const h = new Date().getHours()
+  return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'
 }
 
 function App() {
@@ -125,9 +133,28 @@ function App() {
       </header>
 
       {tab === null && (
+        <section className="homeHero themeBg">
+          <div className="themeOrb themeOrb1" aria-hidden="true" />
+          <div className="themeOrb themeOrb2" aria-hidden="true" />
+          <div className="themeGrid" aria-hidden="true" />
+          <div className="homeHeroText">
+            <span className="loginKicker">Field Service Toolkit</span>
+            <h1>{greeting()}, <span>Field Service Team</span></h1>
+            <p>Pick a tool below to design a box, inspect a battery or charger, or issue parts. Everything works on your phone at site.</p>
+            <div className="homeHeroStats">
+              <div><strong>4</strong><span>Tools</span></div>
+              <div><strong>PDF</strong><span>Reports</span></div>
+              <div><strong>📱</strong><span>Mobile ready</span></div>
+            </div>
+          </div>
+          <div className="homeHeroArt"><BatteryHero compact /></div>
+        </section>
+      )}
+
+      {tab === null && (
         <section className="homeGrid">
-          {TABS.map(t => (
-            <button key={t.id} type="button" className="homeCard" onClick={() => selectTab(t.id)}>
+          {TABS.map((t, i) => (
+            <button key={t.id} type="button" className={`homeCard accent-${t.accent}`} style={{ animationDelay: `${i * 80}ms` }} onClick={() => selectTab(t.id)}>
               <span className="homeIcon" aria-hidden="true">{t.icon}</span>
               <span className={`homeAudience${unlocked[t.id] ? ' open' : ''}`}>{unlocked[t.id] ? '🔓' : '🔒'} {t.audience}</span>
               <span className="homeTitle">{t.label}</span>
@@ -143,6 +170,13 @@ function App() {
           <ErrorBoundary fallback={<TabError />}><t.Component addToast={addToast} /></ErrorBoundary>
         </div>
       ))}
+
+      {tab === null && <Disclaimer />}
+      {tab !== null && (
+        <footer className="appFooterNote">
+          Reports generated from this tool are not authorized documents — for personal convenience only.
+        </footer>
+      )}
 
       {asked && (
         <PasswordDialog
